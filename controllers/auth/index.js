@@ -5,7 +5,6 @@ var bcrypt = require("bcryptjs");
 
 module.exports = {
   signup: async function (req, res) {
-    console.log(req.body);
     const user = {
       email: req.body.email,
       password: bcrypt.hashSync(req.body.password, 8),
@@ -24,7 +23,7 @@ module.exports = {
         console.error(err);
         res.status(404).json({
           success: false,
-          error: { email: "User not created!" },
+          error: { email: "Something went wrong!" },
           error: err,
         });
       });
