@@ -1,8 +1,31 @@
-const QuestionModel = require("../../models/leaningData/Question");
+const {
+  Question,
+  MultiChoice,
+  TrueOrFalse,
+  ShortAnswer,
+} = require("../../models/learningData/Question");
 
 module.exports = {
   create: async function (req, res) {
-    const question = req.body;
+    const question = req.body.question;
+    const type = req.body.type;
+    let QuestionModel;
+    switch (type) {
+      case "MultiChoice":
+        console.log("MultiChoice");
+        QuestionModel = MultiChoice;
+        break;
+      case "TrueOrFalse":
+        QuestionModel = TrueOrFalse;
+        console.log("TrueOrFalse");
+        break;
+      case "ShortAnswer":
+        QuestionModel = ShortAnswer;
+        console.log("ShortAnswer");
+        break;
+      default:
+        QuestionModel = Question;
+    }
     await QuestionModel.create(question)
       .then(function (result) {
         res.status(200).json({
@@ -11,6 +34,7 @@ module.exports = {
         });
       })
       .catch(function (err) {
+        console.log(err);
         if (err.errors) {
           res.status(400).json({ message: "Require data", errors: err.errors });
         } else {
@@ -21,16 +45,24 @@ module.exports = {
       });
   },
   getAll: async function (req, res) {
-    let questions = await QuestionModel.find();
+    let questions = await Question.find()
+      .populate("matiere_id")
+      .populate("item_id")
+      .populate("tags")
+      .populate("cards");
     res.status(200).json({ message: null, data: questions });
   },
   getFilter: async function (req, res) {
     const filter = req.body;
-    let questions = await QuestionModel.find(filter);
+    if (filter.type) {
+      filter["__t"] = filter.type;
+      delete filter.type;
+    }
+    let questions = await Question.find(filter);
     res.status(200).json({ message: null, data: questions });
   },
   getById: function (req, res) {
-    QuestionModel.findById(req.params.id)
+    Question.findById(req.params.id)
       .then(function (question) {
         res.status(200).json({ message: null, data: question });
       })
@@ -40,7 +72,22 @@ module.exports = {
       });
   },
   updateById: function (req, res) {
-    const question = req.body;
+    const question = req.body.question;
+    const type = req.body.question.type;
+    let QuestionModel;
+    switch (type) {
+      case "MultiChoice":
+        QuestionModel = MultiChoice;
+        break;
+      case "TrueOrFalse":
+        QuestionModel = TrueOrFalse;
+        break;
+      case "ShortAnswer":
+        QuestionModel = ShortAnswer;
+        break;
+      default:
+        QuestionModel = Question;
+    }
     QuestionModel.findByIdAndUpdate(req.params.id, question)
       .then(function (question) {
         res
@@ -54,7 +101,7 @@ module.exports = {
   },
   deleteById: function (req, res) {
     console.log(req.params.id);
-    QuestionModel.findByIdAndRemove(req.params.id)
+    Question.findByIdAndRemove(req.params.id)
       .then(function () {
         res
           .status(200)

@@ -8,9 +8,9 @@ const ProgressItemSchema = new Schema(
       ref: "User",
       required: true,
     },
-    matiere_id: {
+    item_id: {
       type: Schema.Types.ObjectId,
-      ref: "Matiere",
+      ref: "Item",
     },
     progress_rate: {
       type: Number,
@@ -28,4 +28,4 @@ const ProgressItemSchema = new Schema(
   }
 );
 
-module.exports = mongoose.model("Progress", ProgressItemSchema);
+module.exports = mongoose.model("Progress_Item", ProgressItemSchema);

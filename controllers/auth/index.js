@@ -29,7 +29,6 @@ module.exports = {
       });
   },
   signin: async function (req, res) {
-    console.log("user just logged in:", req.body);
     User.findOne({
       email: req.body.email,
     })
@@ -54,20 +53,22 @@ module.exports = {
             error: { password: "Invalid Password!" },
           });
         }
-
+        console.log("user just logged in:", req.body);
         const token = jwt.sign({ id: user.id }, process.env.secretKey, {
           algorithm: "HS256",
           allowInsecureKeySizes: true,
           expiresIn: process.env.expiresIn,
         });
+        console.log(token);
 
         res.status(200).json({
           success: true,
           message: "User logged in successfully!",
           user: {
-            id: user.id,
+            _id: user._id,
             email: user.email,
             token: token,
+            role: user.role,
           },
         });
       })
@@ -77,6 +78,23 @@ module.exports = {
           .status(404)
           .json({ success: false, message: "User not found!", error: err });
       });
+  },
+  refresh: async function (req, res) {
+    const token = req.headers["x-access-token"];
+    const decoded = jwt.verify(token, process.env.secretKey);
+    const userId = decoded.id;
+    const user = await User.findById(userId);
+    const newToken = jwt.sign({ id: userId }, process.env.secretKey, {
+      algorithm: "HS256",
+      allowInsecureKeySizes: true,
+      expiresIn: process.env.expiresIn,
+    });
+    res.status(200).json({
+      success: true,
+      message: "Token refreshed successfully!",
+      token: newToken,
+      user,
+    });
   },
   getAll: async function (req, res) {
     let users = await User.find();

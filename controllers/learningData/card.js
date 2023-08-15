@@ -1,12 +1,12 @@
-const ItemModel = require("../../models/learningData/Item");
+const CardModel = require("../../models/learningData/Card");
 
 module.exports = {
   create: async function (req, res) {
-    const item = req.body;
-    await ItemModel.create(item)
+    const card = req.body;
+    await CardModel.create(card)
       .then(function (result) {
         res.status(200).json({
-          message: "Item added successfully!!!",
+          message: "Card added successfully!!!",
           data: { id: result._id },
         });
       })
@@ -21,31 +21,31 @@ module.exports = {
       });
   },
   getAll: async function (req, res) {
-    let items = await ItemModel.find().populate("matiere_id");
-    res.status(200).json({ message: null, data: items });
+    let cards = await CardModel.find().populate("items");
+    res.status(200).json({ message: null, data: cards });
   },
   getFilter: async function (req, res) {
     const filter = req.body;
-    let items = await ItemModel.find(filter);
-    res.status(200).json({ message: null, data: items });
+    let cards = await CardModel.find(filter);
+    res.status(200).json({ message: null, data: cards });
   },
   getById: function (req, res) {
-    ItemModel.findById(req.params.id)
-      .then(function (item) {
-        res.status(200).json({ message: null, data: item });
+    CardModel.findById(req.params.id)
+      .then(function (card) {
+        res.status(200).json({ message: null, data: card });
       })
       .catch(function (err) {
         console.error(err);
-        res.status(404).json({ message: "Item not found", data: null });
+        res.status(404).json({ message: "Card not found", data: null });
       });
   },
   updateById: function (req, res) {
-    const item = req.body;
-    ItemModel.findByIdAndUpdate(req.params.id, item)
-      .then(function (item) {
+    const card = req.body;
+    CardModel.findByIdAndUpdate(req.params.id, card).populate("items")
+      .then(function (updatedCard) {
         res
           .status(200)
-          .json({ message: "Item updated successfully!", data: item });
+          .json({ message: "Card updated successfully!", data: updatedCard });
       })
       .catch(function (err) {
         console.error(err);
@@ -54,11 +54,11 @@ module.exports = {
   },
   deleteById: function (req, res) {
     console.log(req.params.id);
-    ItemModel.findByIdAndRemove(req.params.id)
+    CardModel.findByIdAndRemove(req.params.id)
       .then(function () {
         res
           .status(200)
-          .json({ message: "Item deleted successfully!", data: null });
+          .json({ message: "Card deleted successfully!", data: null });
       })
       .catch(function (err) {
         res.status(400).json({ message: "Delete failed", data: null });

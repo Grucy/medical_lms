@@ -1,13 +1,13 @@
-const ItemModel = require("../../models/learningData/Item");
+const TagModel = require("../../models/learningData/Tag");
 
 module.exports = {
   create: async function (req, res) {
-    const item = req.body;
-    await ItemModel.create(item)
+    const tag = req.body;
+    await TagModel.create(tag)
       .then(function (result) {
         res.status(200).json({
-          message: "Item added successfully!!!",
-          data: { id: result._id },
+          message: "Tag added successfully!!!",
+          data: result,
         });
       })
       .catch(function (err) {
@@ -21,31 +21,34 @@ module.exports = {
       });
   },
   getAll: async function (req, res) {
-    let items = await ItemModel.find().populate("matiere_id");
-    res.status(200).json({ message: null, data: items });
+    let tags = await TagModel.find();
+    res.status(200).json({
+      message: null,
+      data: tags,
+    });
   },
   getFilter: async function (req, res) {
     const filter = req.body;
-    let items = await ItemModel.find(filter);
-    res.status(200).json({ message: null, data: items });
+    let tags = await TagModel.find(filter);
+    res.status(200).json({ message: null, data: tags });
   },
   getById: function (req, res) {
-    ItemModel.findById(req.params.id)
-      .then(function (item) {
-        res.status(200).json({ message: null, data: item });
+    TagModel.findById(req.params.id)
+      .then(function (tag) {
+        res.status(200).json({ message: null, data: tag });
       })
       .catch(function (err) {
         console.error(err);
-        res.status(404).json({ message: "Item not found", data: null });
+        res.status(404).json({ message: "Tag not found", data: null });
       });
   },
   updateById: function (req, res) {
-    const item = req.body;
-    ItemModel.findByIdAndUpdate(req.params.id, item)
-      .then(function (item) {
+    const tag = req.body;
+    TagModel.findByIdAndUpdate(req.params.id, tag)
+      .then(function (tag) {
         res
           .status(200)
-          .json({ message: "Item updated successfully!", data: item });
+          .json({ message: "Tag updated successfully!", data: tag });
       })
       .catch(function (err) {
         console.error(err);
@@ -54,11 +57,11 @@ module.exports = {
   },
   deleteById: function (req, res) {
     console.log(req.params.id);
-    ItemModel.findByIdAndRemove(req.params.id)
+    TagModel.findByIdAndRemove(req.params.id)
       .then(function () {
         res
           .status(200)
-          .json({ message: "Item deleted successfully!", data: null });
+          .json({ message: "Tag deleted successfully!", data: null });
       })
       .catch(function (err) {
         res.status(400).json({ message: "Delete failed", data: null });

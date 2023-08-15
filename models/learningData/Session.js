@@ -1,16 +1,12 @@
 const mongoose = require("mongoose");
 const Schema = mongoose.Schema;
 
-const MatiereSchema = new Schema({
+const SessionSchema = new Schema({
   name: {
     type: String,
     required: true,
   },
-  image_id: {
-    type: Schema.Types.ObjectId,
-    ref: "Image",
-  },
-  n_items: {
+  n_dps: {
     type: Number,
     default: 0,
     required: true,
@@ -22,4 +18,4 @@ const MatiereSchema = new Schema({
   },
 });
 
-module.exports = mongoose.model("Matiere", MatiereSchema);
+module.exports = mongoose.model("Session", SessionSchema);

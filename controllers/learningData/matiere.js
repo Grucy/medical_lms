@@ -1,6 +1,6 @@
-const MatiereModel = require("../../models/common/Matiere");
-const ItemModel = require("../../models/common/Item");
-const QuestionModel = require("../../models/common/Question");
+const MatiereModel = require("../../models/learningData/Matiere");
+const ItemModel = require("../../models/learningData/Item");
+const QuestionModel = require("../../models/learningData/Question");
 
 module.exports = {
   create: async function (req, res) {
@@ -9,7 +9,7 @@ module.exports = {
       .then(function (result) {
         res.status(200).json({
           message: "Matiere added successfully!!!",
-          data: { id: result._id },
+          data: result,
         });
       })
       .catch(function (err) {

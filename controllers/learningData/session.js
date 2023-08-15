@@ -1,13 +1,13 @@
-const ItemModel = require("../../models/learningData/Item");
+const SessionModel = require("../../models/learningData/Session");
 
 module.exports = {
   create: async function (req, res) {
-    const item = req.body;
-    await ItemModel.create(item)
+    const session = req.body;
+    await SessionModel.create(session)
       .then(function (result) {
         res.status(200).json({
-          message: "Item added successfully!!!",
-          data: { id: result._id },
+          message: "Session added successfully!!!",
+          data: result,
         });
       })
       .catch(function (err) {
@@ -21,31 +21,34 @@ module.exports = {
       });
   },
   getAll: async function (req, res) {
-    let items = await ItemModel.find().populate("matiere_id");
-    res.status(200).json({ message: null, data: items });
+    let sessions = await SessionModel.find();
+    res.status(200).json({
+      message: null,
+      data: sessions,
+    });
   },
   getFilter: async function (req, res) {
     const filter = req.body;
-    let items = await ItemModel.find(filter);
-    res.status(200).json({ message: null, data: items });
+    let sessions = await SessionModel.find(filter);
+    res.status(200).json({ message: null, data: sessions });
   },
   getById: function (req, res) {
-    ItemModel.findById(req.params.id)
-      .then(function (item) {
-        res.status(200).json({ message: null, data: item });
+    SessionModel.findById(req.params.id)
+      .then(function (session) {
+        res.status(200).json({ message: null, data: session });
       })
       .catch(function (err) {
         console.error(err);
-        res.status(404).json({ message: "Item not found", data: null });
+        res.status(404).json({ message: "Session not found", data: null });
       });
   },
   updateById: function (req, res) {
-    const item = req.body;
-    ItemModel.findByIdAndUpdate(req.params.id, item)
-      .then(function (item) {
+    const session = req.body;
+    SessionModel.findByIdAndUpdate(req.params.id, session)
+      .then(function (session) {
         res
           .status(200)
-          .json({ message: "Item updated successfully!", data: item });
+          .json({ message: "Session updated successfully!", data: session });
       })
       .catch(function (err) {
         console.error(err);
@@ -54,11 +57,11 @@ module.exports = {
   },
   deleteById: function (req, res) {
     console.log(req.params.id);
-    ItemModel.findByIdAndRemove(req.params.id)
+    SessionModel.findByIdAndRemove(req.params.id)
       .then(function () {
         res
           .status(200)
-          .json({ message: "Item deleted successfully!", data: null });
+          .json({ message: "Session deleted successfully!", data: null });
       })
       .catch(function (err) {
         res.status(400).json({ message: "Delete failed", data: null });

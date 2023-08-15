@@ -1,16 +1,17 @@
 const mongoose = require("mongoose");
 const Schema = mongoose.Schema;
 
-const ProgressItemSchema = new Schema(
+const ProgressMatiereSchema = new Schema(
   {
     user_id: {
       type: Schema.Types.ObjectId,
       ref: "User",
       required: true,
     },
-    item_id: {
+    matiere_id: {
       type: Schema.Types.ObjectId,
-      ref: "Item",
+      ref: "Matiere",
+      required: true,
     },
     progress_rate: {
       type: Number,
@@ -24,8 +25,8 @@ const ProgressItemSchema = new Schema(
     },
   },
   {
-    indexes: [{ user_id: 1, item_id: 1 }],
+    indexes: [{ user_id: 1, matiere_id: 1 }],
   }
 );
 
-module.exports = mongoose.model("Progress", ProgressItemSchema);
+module.exports = mongoose.model("Progress_Matiere", ProgressMatiereSchema);

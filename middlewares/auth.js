@@ -9,6 +9,7 @@ const verifyToken = (req, res, next) => {
 
   jwt.verify(token, process.env.secretKey, (err, decoded) => {
     if (err) {
+      console.log(token)
       return res.status(401).json({
         success: false,
         message: "Unauthorized!",

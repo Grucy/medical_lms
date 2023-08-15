@@ -1,4 +1,4 @@
-const DPModel = require("../../models/leaningData/DP");
+const DPModel = require("../../models/learningData/DP");
 
 module.exports = {
   create: async function (req, res) {

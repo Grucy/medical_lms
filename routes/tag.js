@@ -1,6 +1,6 @@
 const express = require("express");
 const router = express.Router();
-const Controller = require("../controllers/learningData/item");
+const Controller = require("../controllers/learningData/tag");
 
 router.post("/", Controller.create);
 router.get("/", Controller.getAll);
