@@ -29,8 +29,7 @@ async function initial() {
   };
   await User.deleteMany({ role: "admin" });
   await User.create(admin)
-  await Counter.findOneAndDelete({ _id: "Question"});
-  await Counter.create({ _id: "Question", seq: 1 });
+  await Counter.findOneAndUpdate({ _id: "Question"}, { _id: "Question", seq: 1 });
 }
 
 module.exports = connection;
