@@ -18,9 +18,9 @@ const progressRouter = require("./routes/progress");
 const cardRouter = require("./routes/card");
 const playlistRouter = require("./routes/playlist");
 
-app.use(express.json({ limit: 1000000 }));
+app.use(express.json({ limit: 10000000 }));
 app.use(express.urlencoded({ extended: true }));
-app.use(cors({ origin: "https://medical-lms-b0644.web.app", credentials: false }));
+app.use(cors({ origin: "*", credentials: false }));
 
 app.get("/api", function (req, res) {
   res.json({ status: "Server Running ...." });

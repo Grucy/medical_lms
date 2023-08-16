@@ -3,11 +3,7 @@ const Schema = mongoose.Schema;
 
 const DPSchema = new Schema(
   {
-    title: {
-      type: String,
-      required: true,
-    },
-    description: {
+    desc: {
       type: String,
       required: true,
     },
@@ -24,18 +20,20 @@ const DPSchema = new Schema(
       type: Schema.Types.ObjectId,
       ref: "Item",
     },
-    matieres_link: [
-      {
-        type: Schema.Types.ObjectId,
-        ref: "Matiere",
-      },
-    ],
-    items_link: [
-      {
-        type: Schema.Types.ObjectId,
-        ref: "Item",
-      },
-    ],
+    tags: [{type: Schema.Types.ObjectId, ref: "Tag"}],
+    questions: [{type: Schema.Types.ObjectId, ref: "Question"}],
+    // matieres_link: [
+    //   {
+    //     type: Schema.Types.ObjectId,
+    //     ref: "Matiere",
+    //   },
+    // ],
+    // items_link: [
+    //   {
+    //     type: Schema.Types.ObjectId,
+    //     ref: "Item",
+    //   },
+    // ],
   },
   {
     indexes: [

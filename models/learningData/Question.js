@@ -5,7 +5,6 @@ const QuestionSchema = new Schema(
   {
     question_number: {
       type: Number,
-      required: true,
     },
     desc: String,
     question: {
@@ -15,18 +14,18 @@ const QuestionSchema = new Schema(
     matiere_id: {
       type: Schema.Types.ObjectId,
       ref: "Matiere",
-      required: true,
+      // required: true,
     },
     item_id: {
       type: Schema.Types.ObjectId,
       ref: "Item",
-      required: true,
+      // required: true,
+    },
+    dp_id: {
+      type: Schema.Types.ObjectId,
+      ref: "DP",
     },
     tags: [{ type: Schema.Types.ObjectId, ref: "Tag" }],
-    // dp_id: {
-    //   type: Schema.Types.ObjectId,
-    //   ref: "DP",
-    // },
     comment: {
       type: String,
       required: true,
@@ -75,14 +74,6 @@ QuestionSchema.pre("save", async function (next) {
       await item.save();
     }
   }
-  if (this.dp_id) {
-    const DPModel = require("./DP");
-    const dp = await DPModel.findById(this.dp_id);
-    if (dp) {
-      dp.n_questions += 1;
-      await dp.save();
-    }
-  }
   const counter = await Counter.findByIdAndUpdate(
     { _id: "Question" },
     { $inc: { seq: 1 } }
@@ -119,7 +110,7 @@ QuestionSchema.post("deleteOne", async function (next) {
     }
   }
   next();
-})
+});
 
 const CounterSchema = new Schema({
   _id: { type: String, required: true },
