@@ -43,14 +43,15 @@ const ScoreQuestionSchema = new Schema(
   }
 );
 
-ScoreQuestionSchema.pre("save", async function (next) {
-  const ProcessMatiereModel = require("./Progress_Matiere");
-  const ProcessItemModel = require("./Progress_Item");
+const ProcessMatiereModel = require("./Progress_Matiere");
+const ProcessItemModel = require("./Progress_Item");
 
-  const matiereProgress =  await ProcessMatiereModel.findOne({
+ScoreQuestionSchema.pre("save", async function (next) {
+  const matiereProgress = await ProcessMatiereModel.findOne({
     user_id: this.user_id,
     matiere_id: this.matiere_id,
   });
+  console.log(matiereProgress)
   if (matiereProgress) {
     matiereProgress.progress_rate += 1;
     if (this.user_score === 20) {
