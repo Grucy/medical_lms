@@ -8,7 +8,7 @@ module.exports = {
       .then(function (result) {
         res.status(200).json({
           message: "Playlist added successfully!!!",
-          data: { id: result._id },
+          data: result,
         });
       })
       .catch(function (err) {
@@ -23,11 +23,12 @@ module.exports = {
   },
   addQuestion: async function (req, res) {
     const { question_id, user_id, playlist_id } = req.body;
+    console.log(req.body);
     await PlaylistQuestionModel.create({ question_id, user_id, playlist_id })
       .then(function (result) {
         res.status(200).json({
           message: "Question added successfully!!!",
-          data: { id: result._id },
+          data: result,
         });
       })
       .catch(function (err) {
@@ -54,6 +55,18 @@ module.exports = {
     res.status(200).json({ message: null, data: playlists });
   },
   getFilterWithQuestion: async function (req, res) {
+    const filter = req.body;
+    let playlists = await PlaylistQuestionModel.find(filter)
+    // .populate("playlist_id");
+    res.status(200).json({ message: null, data: playlists });
+  },
+  getFilterGetPlaylist:async function (req, res) {
+    const filter = req.body;
+    let playlists = await PlaylistQuestionModel.find(filter)
+    .populate("playlist_id");
+    res.status(200).json({ message: null, data: playlists });
+  },
+  getQuestionsWithDetail: async function (req, res) {
     const filter = req.body;
     let playlists = await PlaylistQuestionModel.find(filter)
     .populate("playlist_id");
@@ -105,7 +118,6 @@ module.exports = {
       });
   },
   deleteQuestionFromPlaylist: function (req, res) {
-    console.log(req.params.id);
     PlaylistQuestionModel.findByIdAndRemove(req.params.id)
       .then(function () {
         res

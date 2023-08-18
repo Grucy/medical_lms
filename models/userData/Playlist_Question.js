@@ -20,6 +20,23 @@ const PlaylistQuestionSchema = new Schema({
     required: true,
     index: true,
   },
+  matiere_id: {
+    type: Schema.Types.ObjectId,
+    ref: "Matiere",
+  },
+  item_id: {
+    type: Schema.Types.ObjectId,
+    ref: "Item",
+  },
+});
+PlaylistQuestionSchema.pre("save", async function (next) {
+  console.log(this);
+  const { Question } = require("../learningData/Question");
+  const question = await Question.findById(this.question_id);
+  console.log(question);
+  if (question.matiere_id) this.matiere_id = question.matiere_id;
+  if (question.item_id) this.item_id = question.item_id;
+  next();
 });
 
 module.exports = mongoose.model("Playlist_Question", PlaylistQuestionSchema);

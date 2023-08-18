@@ -5,7 +5,7 @@ module.exports = {
     let progressData = await ProgressModel.find();
     res.status(200).json({ message: null, data: progressData });
   },
-  getFilter: async function (req, res) {
+  getFilter: function (req, res) {
     const filter = req.body;
     ProgressModel.find(filter).then(function (progressData) {
       res.status(200).json({ message: null, data: progressData });

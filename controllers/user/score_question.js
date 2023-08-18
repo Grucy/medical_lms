@@ -47,6 +47,25 @@ const compareAndSetScore = function (question, user_answer) {
 };
 
 module.exports = {
+  create: async function (req, res) {
+    const item = req.body;
+    await Score_Question.create(item)
+      .then(function (result) {
+        res.status(200).json({
+          message: "Score was saved successfully!!!",
+          data: { id: result._id },
+        });
+      })
+      .catch(function (err) {
+        if (err.errors) {
+          res.status(400).json({ message: "Require data", errors: err.errors });
+        } else {
+          res
+            .status(500)
+            .json({ message: "Internal server error", data: null });
+        }
+      });
+  },
   getAll: async function (req, res) {
     let progressData = await Score_Question.find();
     res.status(200).json({ message: null, data: progressData });

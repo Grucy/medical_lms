@@ -23,6 +23,9 @@ const CardSchema = new Schema({
     type: String,
     required: true,
   },
+  image_desc:{
+    type: String,
+  },
   items: [{
     type: mongoose.Schema.Types.ObjectId,
     ref: "Item",

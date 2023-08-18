@@ -58,6 +58,7 @@ const ShortAnswerSchema = new Schema({
 });
 
 QuestionSchema.pre("save", async function (next) {
+  console.log("increase corresponding Matiere n_quetions by 1")
   if (this.matiere_id) {
     const MatiereModel = require("./Matiere");
     const matiere = await MatiereModel.findById(this.matiere_id);

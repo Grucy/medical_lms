@@ -3,6 +3,7 @@ const router = express.Router();
 const Controller = require("../controllers/user/score_question");
 
 router.post("/", Controller.checkAnswer);
+router.post("/saveScore", Controller.create);
 router.get("/", Controller.getAll);
 router.post("/getLastAssess", Controller.getOne);
 // router.post("/filter", Controller.getFilter);

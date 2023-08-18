@@ -29,6 +29,13 @@ module.exports = {
     let cards = await CardModel.find(filter);
     res.status(200).json({ message: null, data: cards });
   },
+  getFilterByItem: async function (req, res) {
+    const { item_id } = req.body;
+    let cards = await CardModel.find({
+      items:  item_id
+    }).populate("items");
+    res.status(200).json({ message: null, data: cards });
+  },
   getById: function (req, res) {
     CardModel.findById(req.params.id)
       .then(function (card) {
@@ -41,7 +48,8 @@ module.exports = {
   },
   updateById: function (req, res) {
     const card = req.body;
-    CardModel.findByIdAndUpdate(req.params.id, card).populate("items")
+    CardModel.findByIdAndUpdate(req.params.id, card)
+      .populate("items")
       .then(function (updatedCard) {
         res
           .status(200)
