@@ -30,7 +30,7 @@ module.exports = {
       .then(function (result) {
         res.status(200).json({
           message: "Question added successfully!!!",
-          data: { id: result._id },
+          data: result,
         });
       })
       .catch(function (err) {
