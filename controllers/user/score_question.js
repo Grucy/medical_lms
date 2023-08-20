@@ -47,7 +47,7 @@ const compareAndSetScore = function (question, user_answer) {
   return { score, total_score };
 };
 
-module.exports = {
+const Controller = {
   create: async function (req, res) {
     const item = req.body;
     await Score_Question.create(item)
@@ -138,3 +138,5 @@ module.exports = {
       });
   },
 };
+
+module.exports = Controller;
