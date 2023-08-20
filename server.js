@@ -17,6 +17,7 @@ const answerRouter = require("./routes/answer");
 const progressRouter = require("./routes/progress");
 const cardRouter = require("./routes/card");
 const playlistRouter = require("./routes/playlist");
+const quickAccessRouter = require("./routes/quickaccess");
 
 app.use(express.json({ limit: 10000000 }));
 app.use(express.urlencoded({ extended: true }));
@@ -36,6 +37,7 @@ app.use("/api/question", verifyToken, questionRouter);
 app.use("/api/dp", verifyToken, dpRouter);
 app.use("/api/card", cardRouter);
 app.use("/api/playlist", playlistRouter);
+app.use("/api/quickaccess", quickAccessRouter);
 
 app.use("/api/answer", verifyToken, answerRouter);
 

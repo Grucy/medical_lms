@@ -24,4 +24,4 @@ const QuickAccessSchema = new Schema({
   },
 });
 
-module.exports = mongoose.model("QuickAccess", QuickAccessSchema);
+module.exports = mongoose.model("SidebarQuickAccess", QuickAccessSchema);

@@ -16,8 +16,6 @@ const ScheduleSchema = new Schema({
     required: true,
     index: true,
   },
-  isMatiere: Boolean,
-  isItem: Boolean,
   matiere_or_item_id: {
     type: Schema.Types.ObjectId,
     required: true,
