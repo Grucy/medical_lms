@@ -5,7 +5,7 @@ const {
   ShortAnswer,
 } = require("../../models/learningData/Question");
 const Score_Question = require("../../models/userData/Score_Question");
-const Score_Dp = require("../../models/userData/Score_Dp");
+const Score_Dp = require("../../models/userData/Score_DP");
 
 const compareAndSetScore = function (question, user_answer) {
   let score,
