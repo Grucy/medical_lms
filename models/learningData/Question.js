@@ -57,6 +57,7 @@ const ShortAnswerSchema = new Schema({
   ],
 });
 
+const Counter = require('./Counter');
 QuestionSchema.pre("save", async function (next) {
   console.log("increase corresponding Matiere n_quetions by 1")
   if (this.matiere_id) {
@@ -81,6 +82,11 @@ QuestionSchema.pre("save", async function (next) {
   );
   if (counter) {
     this.question_number = counter.seq;
+  } else {
+    await Counter.create({
+      _id:"Question",
+      seq: 0
+    })
   }
   next();
 });
@@ -113,11 +119,6 @@ QuestionSchema.post("deleteOne", async function (next) {
   next();
 });
 
-const CounterSchema = new Schema({
-  _id: { type: String, required: true },
-  seq: { type: Number, default: 0 },
-});
-const Counter = mongoose.model("Counter", CounterSchema);
 
 const Question = mongoose.model("Question", QuestionSchema);
 const MultiChoice = Question.discriminator("MultiChoice", MultiChoiceSchema);

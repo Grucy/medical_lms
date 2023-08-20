@@ -3,9 +3,10 @@ const router = express.Router();
 const Controller = require("../controllers/user/score_question");
 
 router.post("/", Controller.checkAnswer);
-router.post("/saveScore", Controller.create);
+// router.post("/saveScore", Controller.create);
 router.get("/", Controller.getAll);
 router.post("/getLastAssess", Controller.getOne);
+router.post("/getLastAssessForDp", Controller.getDpOne);
 // router.post("/filter", Controller.getFilter);
 // router.get("/:id", Controller.getById);
 // router.put("/:id", Controller.updateById);

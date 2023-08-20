@@ -5,6 +5,7 @@ const {
   ShortAnswer,
 } = require("../../models/learningData/Question");
 const Score_Question = require("../../models/userData/Score_Question");
+const Score_Dp = require("../../models/userData/Score_Dp");
 
 const compareAndSetScore = function (question, user_answer) {
   let score,
@@ -73,6 +74,11 @@ module.exports = {
   getOne: async function (req, res) {
     const { user_id, question_id } = req.body;
     let lastAccess = await Score_Question.findOne({ user_id, question_id });
+    res.status(200).json({ message: null, data: lastAccess });
+  },
+  getDpOne: async function (req, res) {
+    const { user_id, question_id } = req.body;
+    let lastAccess = await Score_Dp.findOne({ user_id, question_id });
     res.status(200).json({ message: null, data: lastAccess });
   },
   checkAnswer: async function (req, res) {

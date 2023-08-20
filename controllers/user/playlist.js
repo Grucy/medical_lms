@@ -42,11 +42,12 @@ module.exports = {
       });
   },
   getAll: async function (req, res) {
-    let playlists = await PlaylistModel.find();
+    let playlists = await PlaylistModel.find()
     res.status(200).json({ message: null, data: playlists });
   },
   getAllWithQuestions: async function (req, res) {
-    let playlists = await PlaylistQuestionModel.find();
+    let playlists = await PlaylistQuestionModel.find()
+    .populate("playlist_id");
     res.status(200).json({ message: null, data: playlists });
   },
   getFilter: async function (req, res) {

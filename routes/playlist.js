@@ -8,7 +8,7 @@ router.post("/filter", Controller.getFilter);
 router.get('/:id', Controller.getById);
 router.put('/:id', Controller.updateById);
 router.delete('/:id', Controller.deleteById);
-router.get("/question", Controller.getAllWithQuestions);
+router.get("/question/all", Controller.getAllWithQuestions);
 router.post("/question", Controller.addQuestion);
 router.post("/filterQuestion", Controller.getFilterWithQuestion);
 router.post("/filterAndGetPlaylist", Controller.getFilterGetPlaylist);

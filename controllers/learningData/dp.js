@@ -54,7 +54,7 @@ module.exports = {
       .then(function (result) {
         res.status(200).json({
           message: "DP added successfully!!!",
-          data: { id: result._id },
+          data: result,
         });
       })
       .catch(function (err) {
@@ -73,7 +73,7 @@ module.exports = {
   },
   getFilter: async function (req, res) {
     const filter = req.body;
-    let dps = await DPModel.find(filter);
+    let dps = await DPModel.find(filter).populate("matiere_id").populate("item_id");
     res.status(200).json({ message: null, data: dps });
   },
   getById: function (req, res) {
