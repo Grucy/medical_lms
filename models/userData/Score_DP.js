@@ -36,4 +36,4 @@ const ScoreDPSchema = new Schema(
   }
 );
 
-module.exports = mongoose.model("Progress", ScoreDPSchema);
+module.exports = mongoose.model("Score_DP", ScoreDPSchema);
