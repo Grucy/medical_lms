@@ -20,7 +20,7 @@ connection.on("error", (err) => {
 
 async function initial() {
   const User = require("../models/auth/User");
-  const { Counter } = require("../models/learningData/Question");
+  // const { Counter } = require("../models/learningData/Question");
   const bcrypt = require("bcryptjs");
   const admin = {
     email: process.env.adminEmail,
@@ -29,7 +29,7 @@ async function initial() {
   };
   await User.deleteMany({ role: "admin" });
   await User.create(admin)
-  await Counter.findOneAndUpdate({ _id: "Question"}, { _id: "Question", seq: 1 });
+  // await Counter.findOneAndUpdate({ _id: "Question"}, { _id: "Question", seq: 1 });
 }
 
 module.exports = connection;
