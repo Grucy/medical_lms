@@ -5,6 +5,7 @@ const QuestionSchema = new Schema(
   {
     question_number: {
       type: Number,
+      default: 1,
     },
     desc: String,
     question: {
@@ -62,24 +63,19 @@ QuestionSchema.pre("save", async function (next) {
   console.log("increase corresponding Matiere n_quetions by 1");
   if (this.matiere_id) {
     const MatiereModel = require("./Matiere");
-    const matiere = await MatiereModel.findById(this.matiere_id);
-    if (matiere) {
-      matiere.n_questions += 1;
-      await matiere.save();
-    }
+    await MatiereModel.findByIdAndUpdate(this.matiere_id, {
+      $inc: { n_questions: 1 },
+    });
   }
   if (this.item_id) {
     const ItemModel = require("./Item");
-    const item = await ItemModel.findById(this.item_id);
-    if (item) {
-      item.n_questions += 1;
-      await item.save();
-    }
+    await ItemModel.findByIdAndUpdate(this.item_id,{$inc: {n_questions: 1}});
   }
   if (this.matiere_id) {
     const counter = await Counter.findByIdAndUpdate(
       { _id: "Question" },
-      { $inc: { seq: 1 } }
+      { $inc: { seq: 1 } },
+      { new: true }
     );
     if (counter) {
       this.question_number = counter.seq;
