@@ -105,12 +105,36 @@ const Controller = {
     // .populate("DP")
     // .exec();
     const { total_score, score } = compareAndSetScore(question, user_answer);
-    await Score_Question.findOneAndUpdate(
-      {
-        user_id,
-        question_id: question._id,
-      },
-      {
+    // Find the last assessment for the user and question
+    const lastAssess = await Score_Question.findOne({
+      user_id,
+      question_id: question._id,
+    });
+    console.log(lastAssess)
+    // If the last assessment exists, update the scores
+    if (lastAssess) {
+      const last_score = lastAssess.user_score;
+      lastAssess.last_score = last_score;
+      lastAssess.user_score = score;
+
+      // Save the updated assessment
+      await lastAssess.save()
+        .then(function (result) {
+          res.status(200).json({
+            message: "Your answer was submitted successfully!",
+            data: { score, question },
+          });
+        })
+        .catch(function (err) {
+          if (err.errors) {
+            res.status(400).json({ message: "Require data", errors: err.errors });
+          } else {
+            res.status(500).json({ message: "Internal server error", data: null });
+          }
+        });
+    } else {
+      // Create a new assessment
+      const newAssess = {
         user_id,
         matiere_id: question.matiere_id,
         item_id: question.item_id,
@@ -118,25 +142,25 @@ const Controller = {
         question_id: question._id,
         user_score: score,
         total_score,
-      },
-      { upsert: true, new: true }
-    )
-      .then(function (result) {
-        res.status(200).json({
-          message: "Your answer was submitted successfully!",
-          data: { score, question },
+      };
+
+      // Save the new assessment
+      await Score_Question.create(newAssess)
+        .then(function (result) {
+          res.status(200).json({
+            message: "Your answer was submitted successfully!",
+            data: { score, question },
+          });
+        })
+        .catch(function (err) {
+          if (err.errors) {
+            res.status(400).json({ message: "Require data", errors: err.errors });
+          } else {
+            res.status(500).json({ message: "Internal server error", data: null });
+          }
         });
-      })
-      .catch(function (err) {
-        if (err.errors) {
-          res.status(400).json({ message: "Require data", errors: err.errors });
-        } else {
-          res
-            .status(500)
-            .json({ message: "Internal server error", data: null });
-        }
-      });
-  },
-};
+    }
+  }
+}
 
 module.exports = Controller;
