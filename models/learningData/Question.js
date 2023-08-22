@@ -92,7 +92,7 @@ QuestionSchema.pre("save", async function (next) {
 QuestionSchema.pre("findOneAndRemove", async function (next) {
   const doc = await this.model.findOne(this.getFilter());
   this.matiere_id = doc.matiere_id;
-  this.itemd_id = doc.item_id;
+  this.item_id = doc.item_id;
   this.dp_id = doc.dp_id;
   if (this.matiere_id) {
     const MatiereModel = require("./Matiere");
