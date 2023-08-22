@@ -5,7 +5,7 @@ const DPSchema = new Schema(
   {
    dp_number:{
     type: Number,
-    default: 0,
+    default: 1,
    },
     desc: {
       type: String,
@@ -16,14 +16,14 @@ const DPSchema = new Schema(
       required: true,
       ref: "Session",
     },
-    matiere_id: {
+    matieres: [{
       type: Schema.Types.ObjectId,
       ref: "Matiere",
-    },
-    item_id: {
+    }],
+    items: [{
       type: Schema.Types.ObjectId,
       ref: "Item",
-    },
+    }],
     tags: [{type: Schema.Types.ObjectId, ref: "Tag"}],
     questions: [{type: Schema.Types.ObjectId, ref: "Question"}],
     // matieres_link: [
@@ -62,7 +62,8 @@ DPSchema.pre("save", async function (next) {
   const Counter = require("./Counter");
   const counter = await Counter.findByIdAndUpdate(
     { _id: "DP" },
-    { $inc: { seq: 1 } }
+    { $inc: { seq: 1 } },
+    { new: true }
   );
 
   if (counter) {
@@ -77,10 +78,12 @@ DPSchema.pre("save", async function (next) {
   next();
 });
 
-DPSchema.post("deleteOne", async function (next) {
+DPSchema.pre("findByIdAndRemove", async function (next) {
+  const doc = await this.model.findOne(this.getFilter());
+  this.session_id = doc.session_id;
   if (this.session_id) {
-    const MatiereModel = require("./Matiere");
-    const session = await MatiereModel.findById(this.session_id);
+    const SessionModel = require("./Session");
+    const session = await SessionModel.findById(this.session_id);
     if (session) {
       session.n_dps -= 1;
       session.n_questions -= this.questions.length;

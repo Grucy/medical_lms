@@ -68,12 +68,12 @@ module.exports = {
       });
   },
   getAll: async function (req, res) {
-    let dps = await DPModel.find().populate("matiere_id").populate("item_id").populate("tags").populate("session_id");
+    let dps = await DPModel.find().populate("matieres").populate("items").populate("tags").populate("session_id");
     res.status(200).json({ message: null, data: dps });
   },
   getFilter: async function (req, res) {
     const filter = req.body;
-    let dps = await DPModel.find(filter).populate("matiere_id").populate("item_id");
+    let dps = await DPModel.find(filter).populate("matieres").populate("items");
     res.status(200).json({ message: null, data: dps });
   },
   getById: function (req, res) {

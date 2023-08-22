@@ -4,6 +4,7 @@ const Controller = require("../controllers/learningData/item");
 
 router.post("/", Controller.create);
 router.get("/", Controller.getAll);
+router.get("/count", Controller.count);
 router.post("/filter", Controller.getFilter);
 router.get("/:id", Controller.getById);
 router.put("/:id", Controller.updateById);

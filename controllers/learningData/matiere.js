@@ -3,6 +3,24 @@ const ItemModel = require("../../models/learningData/Item");
 const QuestionModel = require("../../models/learningData/Question");
 
 module.exports = {
+  count: async function (req, res) {
+    await MatiereModel.count()
+      .then(function (count) {
+        res.status(200).json({
+          message: "Success",
+          data: count,
+        });
+      })
+      .catch(function (err) {
+        if (err.errors) {
+          res.status(400).json({ message: "Require data", errors: err.errors });
+        } else {
+          res
+            .status(500)
+            .json({ message: "Internal server error", data: null });
+        }
+      });
+  },
   create: async function (req, res) {
     const matiere = req.body;
     await MatiereModel.create(matiere)
