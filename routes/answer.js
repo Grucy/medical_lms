@@ -1,8 +1,9 @@
 const express = require("express");
 const router = express.Router();
-const Controller = require("../controllers/user/score_question");
+const Controller = require("../controllers/user/score");
 
 router.post("/", Controller.checkAnswer);
+router.post("/dp/", Controller.checkDp);
 // router.post("/saveScore", Controller.create);
 router.get("/", Controller.getAll);
 router.post("/getLastAssess", Controller.getOne);

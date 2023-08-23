@@ -71,6 +71,10 @@ module.exports = {
     let dps = await DPModel.find().populate("matieres").populate("items").populate("tags").populate("session_id");
     res.status(200).json({ message: null, data: dps });
   },
+  getByIdWithQuestions: async function (req, res) {
+    let dps = await DPModel.findById(req.params.id).populate("matieres").populate("items").populate("tags").populate("session_id").populate("questions");
+    res.status(200).json({ message: null, data: dps });
+  },
   getFilter: async function (req, res) {
     const filter = req.body;
     let dps = await DPModel.find(filter).populate("matieres").populate("items");

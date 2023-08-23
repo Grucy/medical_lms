@@ -1,3 +1,4 @@
+const mongoose = require('mongoose');
 const {
   Question,
   MultiChoice,
@@ -109,6 +110,25 @@ module.exports = {
       })
       .catch(function (err) {
         res.status(400).json({ message: "Delete failed", data: null });
+      });
+  },
+  getFilterRandom: function (req, res) {
+    const { matiere_id, n_questions } = req.body;
+    const pipeline = [
+      {
+        $match: {
+          matiere_id: mongoose.Types.ObjectId(matiere_id)
+        }
+      },
+      { $sample: { size: n_questions } },
+      { $limit: n_questions },
+    ];
+    Question.aggregate(pipeline)
+      .then((result) => {
+        res.status(200).json({ message: null, data: result });
+      })
+      .catch((error) => {
+        console.error(error);
       });
   },
 };

@@ -24,16 +24,15 @@ const ScoreDPSchema = new Schema(
       type: Date,
       default: Date.now,
     },
-    success_rate: {
-      excellent: Number,
-      good: Number,
-      average: Number,
-      poor: Number,
-    },
   },
   {
     indexes: [{ user_id: 1, dp_id: 1 }],
   }
 );
+
+ScoreDPSchema.pre("findOneAndUpdate", function (next) {
+  this._update.last_access = Date.now();
+  next();
+});
 
 module.exports = mongoose.model("Score_DP", ScoreDPSchema);

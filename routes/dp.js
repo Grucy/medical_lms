@@ -6,6 +6,7 @@ router.post("/", Controller.create);
 router.get("/", Controller.getAll);
 router.post("/filter", Controller.getFilter);
 router.get('/:id', Controller.getById);
+router.get('/withDetails/:id', Controller.getByIdWithQuestions);
 router.put('/:id', Controller.updateById);
 router.delete('/:id', Controller.deleteById);
 

@@ -5,6 +5,7 @@ const Controller = require('../controllers/learningData/question');
 router.post("/", Controller.create);
 router.get("/", Controller.getAll);
 router.post("/filter", Controller.getFilter);
+router.post("/filterRandom", Controller.getFilterRandom);
 router.get('/:id', Controller.getById);
 router.put('/:id', Controller.updateById);
 router.delete('/:id', Controller.deleteById);
