@@ -20,9 +20,9 @@ module.exports = {
         }
       });
   },
-  getAll: async function (req, res) {
-    let progressData = await QuickAccessModel.find();
-    res.status(200).json({ message: null, data: progressData });
+  getFilter: async function (req, res) {
+    let result = await QuickAccessModel.find();
+    res.status(200).json({ message: null, data: result });
   },
   deleteById: function (req, res) {
     QuickAccessModel.findByIdAndRemove(req.params.id)
