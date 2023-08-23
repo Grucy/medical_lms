@@ -1,4 +1,4 @@
-const mongoose = require('mongoose');
+const mongoose = require("mongoose");
 const {
   Question,
   MultiChoice,
@@ -113,13 +113,15 @@ module.exports = {
       });
   },
   getFilterRandom: function (req, res) {
-    const { matiere_id, n_questions } = req.body;
+    const { matiere_id, item_id, n_questions } = req.body;
+    const filter = {
+      matiere_id:new mongoose.Types.ObjectId(matiere_id),
+      item_id:new mongoose.Types.ObjectId(item_id),
+    };
+    if (!matiere_id) delete filter.matiere_id;
+    if (!item_id) delete filter.item_id;
     const pipeline = [
-      {
-        $match: {
-          matiere_id: mongoose.Types.ObjectId(matiere_id)
-        }
-      },
+      { $match: filter },
       { $sample: { size: n_questions } },
       { $limit: n_questions },
     ];
