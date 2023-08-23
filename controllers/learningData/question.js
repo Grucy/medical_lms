@@ -114,6 +114,7 @@ module.exports = {
   },
   getFilterRandom: function (req, res) {
     const { matiere_id, item_id, n_questions } = req.body;
+    console.log(typeof n_questions);
     const filter = {
       matiere_id:new mongoose.Types.ObjectId(matiere_id),
       item_id:new mongoose.Types.ObjectId(item_id),
@@ -122,8 +123,8 @@ module.exports = {
     if (!item_id) delete filter.item_id;
     const pipeline = [
       { $match: filter },
-      { $sample: { size: n_questions } },
-      { $limit: n_questions },
+      { $sample: { size: parseInt(n_questions) } },
+      { $limit: parseInt(n_questions) },
     ];
     Question.aggregate(pipeline)
       .then((result) => {
