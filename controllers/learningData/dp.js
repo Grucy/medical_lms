@@ -80,6 +80,19 @@ module.exports = {
     let dps = await DPModel.find(filter).populate("matieres").populate("items");
     res.status(200).json({ message: null, data: dps });
   },
+  getPage: async function (req, res) {
+    const {pageSize, pageNumber, searchText, filter, sort} = req.body
+    const filterWithSearch={...filter, desc:{$regex:searchText, $options:'i'}}
+    const total_number = await DPModel.countDocuments(filterWithSearch)
+    DPModel.find(filterWithSearch).sort(sort).skip((pageNumber-1)*pageSize).limit(pageSize).populate("matieres").populate("items").populate("tags").populate("session_id")
+    .then(function (dps) {
+      res.status(200).json({message: "DPs found successfully", total_number: total_number, data: dps});
+    })
+    .catch(function (err) {
+      console.log(err);
+      res.status(400).json({message: "DPs not found", data: null});
+    });
+  },
   getById: function (req, res) {
     DPModel.findById(req.params.id)
       .then(function (dp) {

@@ -82,4 +82,17 @@ module.exports = {
         res.status(400).json({ message: "Delete failed", data: null });
       });
   },
+  getPage: async function (req, res) {
+    const {pageSize, pageNumber, searchText, filter, sort} = req.body
+    const filterWithSearch={...filter, name:{$regex:searchText, $options:'i'}}
+    const total_number = await ItemModel.countDocuments(filterWithSearch)
+    ItemModel.find(filterWithSearch).sort(sort).skip((pageNumber-1)*pageSize).limit(pageSize)
+    .then(function (items) {
+      res.status(200).json({message: "Item found successfully", total_number: total_number, data: items});
+    })
+    .catch(function (err) {
+      console.log(err);
+      res.status(400).json({message: "Item not found", data: null});
+    });
+  },
 };

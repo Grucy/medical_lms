@@ -99,4 +99,16 @@ module.exports = {
         res.status(400).json({ message: "Delete failed", data: null });
       });
   },
+  getPage: function (req, res) {
+    const { searchText} = req.body
+    const filterWithSearch={ name:{$regex:searchText, $options:'i'}}
+    MatiereModel.find(filterWithSearch)
+    .then(function (matieres) {
+      res.status(200).json({message: "Matieres found successfully", data: matieres});
+    })
+    .catch(function (err) {
+      console.log(err);
+      res.status(400).json({message: "Matiere not found", data: null});
+    });
+  },
 };

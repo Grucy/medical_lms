@@ -1,3 +1,4 @@
+const mongoose = require("mongoose");
 const PlaylistModel = require("../../models/userData/Playlist");
 const PlaylistQuestionModel = require("../../models/userData/Playlist_Question");
 
@@ -42,12 +43,11 @@ module.exports = {
       });
   },
   getAll: async function (req, res) {
-    let playlists = await PlaylistModel.find()
+    let playlists = await PlaylistModel.find();
     res.status(200).json({ message: null, data: playlists });
   },
   getAllWithQuestions: async function (req, res) {
-    let playlists = await PlaylistQuestionModel.find()
-    .populate("playlist_id");
+    let playlists = await PlaylistQuestionModel.find().populate("playlist_id");
     res.status(200).json({ message: null, data: playlists });
   },
   getFilter: async function (req, res) {
@@ -57,21 +57,56 @@ module.exports = {
   },
   getFilterWithQuestion: async function (req, res) {
     const filter = req.body;
-    let playlists = await PlaylistQuestionModel.find(filter)
+    let playlists = await PlaylistQuestionModel.find(filter);
     // .populate("playlist_id");
     res.status(200).json({ message: null, data: playlists });
   },
-  getFilterGetPlaylist:async function (req, res) {
+  getFilterGetPlaylist: async function (req, res) {
     const filter = req.body;
-    let playlists = await PlaylistQuestionModel.find(filter)
-    .populate("playlist_id");
+    let playlists = await PlaylistQuestionModel.find(filter).populate(
+      "playlist_id"
+    );
     res.status(200).json({ message: null, data: playlists });
   },
   getQuestionsWithDetail: async function (req, res) {
-    const filter = req.body;
-    let playlists = await PlaylistQuestionModel.find(filter)
-    .populate("playlist_id");
-    res.status(200).json({ message: null, data: playlists });
+    const { pageSize, pageNumber,searchText, user_id, matiere_id, playlist_id, item_id, sort } =
+      req.body;
+    const filter = { 
+      user_id: new mongoose.Types.ObjectId(user_id),
+      matiere_id: new mongoose.Types.ObjectId(matiere_id),
+      item_id: new mongoose.Types.ObjectId(item_id),playlist_id: new mongoose.Types.ObjectId(playlist_id)
+    };
+    if (!user_id) delete filter.user_id;
+    if (!matiere_id) delete filter.matiere_id;
+    if (!item_id) delete filter.item_id;
+    if (!playlist_id) delete filter.playlist_id;
+    const pipeline = [
+      { $match: filter }, // filter criteria
+      { $group: { _id: "$question_id" } },
+    ];
+    const allQuestions = await PlaylistQuestionModel.aggregate(pipeline);
+    console.log(allQuestions.length);
+    const getPagePipeline = [
+      { $match: filter }, // filter criteria
+      { $group: { _id: "$question_id" } }, // group by question_id
+      // { $sort: sort }, // sort like by createdAt in descending order
+      { $skip: (parseInt(pageNumber) - 1) * parseInt(pageSize) }, // skip documents based on page number and page size
+      { $limit: parseInt(pageSize) }, // limit the number of documents to retrieve per page
+    ];
+    PlaylistQuestionModel.aggregate(getPagePipeline)
+      .then(function (questions) {
+        res
+          .status(200)
+          .json({
+            message: null,
+            total_number: allQuestions.length,
+            data: questions,
+          });
+      })
+      .catch(function (err) {
+        console.log(err);
+        res.status(400).json({ message: "playlists not found", data: null });
+      });
   },
   getById: function (req, res) {
     PlaylistModel.findById(req.params.id)
