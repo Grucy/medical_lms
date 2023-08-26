@@ -24,7 +24,6 @@ module.exports = {
   },
   addQuestion: async function (req, res) {
     const { question_id, user_id, playlist_id } = req.body;
-    console.log(req.body);
     await PlaylistQuestionModel.create({ question_id, user_id, playlist_id })
       .then(function (result) {
         res.status(200).json({
@@ -85,7 +84,6 @@ module.exports = {
       { $group: { _id: "$question_id" } },
     ];
     const allQuestions = await PlaylistQuestionModel.aggregate(pipeline);
-    console.log(allQuestions.length);
     const getPagePipeline = [
       { $match: filter }, // filter criteria
       { $group: { _id: "$question_id" } }, // group by question_id
@@ -142,7 +140,6 @@ module.exports = {
       });
   },
   deleteById: function (req, res) {
-    console.log(req.params.id);
     PlaylistModel.findByIdAndRemove(req.params.id)
       .then(function () {
         res

@@ -11,7 +11,6 @@ module.exports = {
     res.status(200).json({ message: null, data: progressData });
   },
   deleteById: function (req, res) {
-    console.log(req.params.id);
     ProgressModel.findByIdAndRemove(req.params.id)
       .then(function () {
         res

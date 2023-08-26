@@ -20,7 +20,7 @@ const ScoreDPSchema = new Schema(
       type: Number,
       required: true,
     },
-    last_access: {
+    last_assess: {
       type: Date,
       default: Date.now,
     },
@@ -31,7 +31,7 @@ const ScoreDPSchema = new Schema(
 );
 
 ScoreDPSchema.pre("findOneAndUpdate", function (next) {
-  this._update.last_access = Date.now();
+  this._update.last_assess = Date.now();
   next();
 });
 

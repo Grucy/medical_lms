@@ -15,7 +15,6 @@ module.exports = {
     });
   },
   deleteById: function (req, res) {
-    console.log(req.params.id);
     ProgressModel.findByIdAndRemove(req.params.id)
       .then(function () {
         res

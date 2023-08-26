@@ -15,16 +15,13 @@ module.exports = {
       let QuestionModel;
       switch (dp.questions[i].type) {
         case "MultiChoice":
-          console.log("MultiChoice");
           QuestionModel = MultiChoice;
           break;
         case "TrueOrFalse":
           QuestionModel = TrueOrFalse;
-          console.log("TrueOrFalse");
           break;
         case "ShortAnswer":
           QuestionModel = ShortAnswer;
-          console.log("ShortAnswer");
           break;
         default:
           QuestionModel = Question;
@@ -115,7 +112,6 @@ module.exports = {
       });
   },
   deleteById: function (req, res) {
-    console.log(req.params.id);
     DPModel.findByIdAndRemove(req.params.id)
       .then(function () {
         res

@@ -13,16 +13,13 @@ module.exports = {
     let QuestionModel;
     switch (type) {
       case "MultiChoice":
-        console.log("MultiChoice");
         QuestionModel = MultiChoice;
         break;
       case "TrueOrFalse":
         QuestionModel = TrueOrFalse;
-        console.log("TrueOrFalse");
         break;
       case "ShortAnswer":
         QuestionModel = ShortAnswer;
-        console.log("ShortAnswer");
         break;
       default:
         QuestionModel = Question;
@@ -101,7 +98,6 @@ module.exports = {
       });
   },
   deleteById: function (req, res) {
-    console.log(req.params.id);
     Question.findByIdAndRemove(req.params.id)
       .then(function () {
         res
@@ -114,7 +110,6 @@ module.exports = {
   },
   getFilterRandom: function (req, res) {
     const { matiere_id, item_id, n_questions } = req.body;
-    console.log(typeof n_questions);
     const filter = {
       matiere_id:new mongoose.Types.ObjectId(matiere_id),
       item_id:new mongoose.Types.ObjectId(item_id),

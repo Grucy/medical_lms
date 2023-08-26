@@ -61,7 +61,6 @@ module.exports = {
       });
   },
   deleteById: function (req, res) {
-    console.log(req.params.id);
     CardModel.findByIdAndRemove(req.params.id)
       .then(function () {
         res

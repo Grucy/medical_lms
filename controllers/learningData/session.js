@@ -56,7 +56,6 @@ module.exports = {
       });
   },
   deleteById: function (req, res) {
-    console.log(req.params.id);
     SessionModel.findByIdAndRemove(req.params.id)
       .then(function () {
         res

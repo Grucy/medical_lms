@@ -71,7 +71,6 @@ module.exports = {
       });
   },
   deleteById: function (req, res) {
-    console.log(req.params.id);
     ItemModel.findByIdAndRemove(req.params.id)
       .then(function () {
         res

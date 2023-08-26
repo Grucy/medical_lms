@@ -60,7 +60,7 @@ const ShortAnswerSchema = new Schema({
 
 const Counter = require("./Counter");
 QuestionSchema.pre("save", async function (next) {
-  console.log("increase corresponding Matiere n_quetions by 1");
+  // console.log("increase corresponding Matiere n_quetions by 1");
   if (this.matiere_id) {
     const MatiereModel = require("./Matiere");
     await MatiereModel.findByIdAndUpdate(this.matiere_id, {

@@ -59,7 +59,6 @@ module.exports = {
           allowInsecureKeySizes: true,
           expiresIn: process.env.expiresIn,
         });
-        console.log(token);
 
         res.status(200).json({
           success: true,
