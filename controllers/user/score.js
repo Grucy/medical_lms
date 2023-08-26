@@ -37,10 +37,7 @@ const compareAndSetScore = function (question, user_answer) {
         score = user_answer === question.answer ? 20 : 0;
         break;
       case "ShortAnswer":
-        const correctAnswers = user_answer.split(",").map((item) => item.trim()).filter((answer) =>
-          question.answers.includes(answer)
-        ).length;
-        score = Math.round((correctAnswers / question.answers.length) * 20);
+        score = question.answers.includes(user_answer.trim()) ? 20 : 0;
         break;
       default:
         score = 0;
