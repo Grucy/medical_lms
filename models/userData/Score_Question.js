@@ -27,15 +27,14 @@ const ScoreQuestionSchema = new Schema(
       ref: "Question",
       required: true,
     },
-    user_score: {
+    last_score: {
       type: Number,
-      required: true,
     },
     total_score: {
       type: Number,
       required: true,
     },
-    last_access: {
+    last_assess: {
       type: Date,
       required: true,
       default: Date.now,
@@ -46,11 +45,6 @@ const ScoreQuestionSchema = new Schema(
   }
 );
 
-ScoreQuestionSchema.pre("save", function (next) {
-  this.last_access = Date.now();
-  next();
-});
-
 ScoreQuestionSchema.pre("save", async function (next) {
   if (this.matiere_id) {
     const matiereProgress = await ProcessMatiereModel.findOne({
@@ -58,8 +52,7 @@ ScoreQuestionSchema.pre("save", async function (next) {
       matiere_id: this.matiere_id,
     });
     if (matiereProgress) {
-      console.log(this.last_score)
-      if (!this.last_score) matiereProgress.progress_rate += 1;
+      if (!this.last_assess) matiereProgress.progress_rate += 1;
       if (this.user_score === 20) {
         matiereProgress.success_rate.excellent += 1;
       } else if (this.user_score >= 10) {
@@ -91,7 +84,7 @@ ScoreQuestionSchema.pre("save", async function (next) {
       item_id: this.item_id,
     });
     if (itemProgress) {
-      if (!this.last_score) itemProgress.progress_rate += 1;
+      if (!this.last_assess) itemProgress.progress_rate += 1;
       if (this.user_score === 20) {
         itemProgress.success_rate.excellent += 1;
       } else if (this.user_score >= 10) {
@@ -117,6 +110,11 @@ ScoreQuestionSchema.pre("save", async function (next) {
       await newItemProgress.save();
     }
   }
+  next();
+});
+
+ScoreQuestionSchema.pre("save", function (next) {
+  this.last_assess = Date.now();
   next();
 });
 

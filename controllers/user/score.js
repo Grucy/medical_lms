@@ -164,11 +164,9 @@ const Controller = {
       user_id,
       question_id: question._id,
     });
-    console.log(lastAssess);
     // If the last assessment exists, update the scores
     if (lastAssess) {
-      const last_score = lastAssess.user_score;
-      lastAssess.last_score = last_score;
+      console.log("the last assessment exists");
       lastAssess.user_score = score;
 
       // Save the updated assessment
