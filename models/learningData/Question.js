@@ -71,21 +71,21 @@ QuestionSchema.pre("save", async function (next) {
     const ItemModel = require("./Item");
     await ItemModel.findByIdAndUpdate(this.item_id,{$inc: {n_questions: 1}});
   }
-  if (this.matiere_id) {
-    const counter = await Counter.findByIdAndUpdate(
-      { _id: "Question" },
-      { $inc: { seq: 1 } },
-      { new: true }
-    );
-    if (counter) {
-      this.question_number = counter.seq;
-    } else {
-      await Counter.create({
-        _id: "Question",
-        seq: 0,
-      });
-    }
-  }
+  // if (this.matiere_id && !this.question_number) {
+  //   const counter = await Counter.findByIdAndUpdate(
+  //     { _id: "Question" },
+  //     { $inc: { seq: 1 } },
+  //     { new: true }
+  //   );
+  //   if (counter) {
+  //     this.question_number = counter.seq;
+  //   } else {
+  //     await Counter.create({
+  //       _id: "Question",
+  //       seq: 0,
+  //     });
+  //   }
+  // }
   next();
 });
 

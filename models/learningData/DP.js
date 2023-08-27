@@ -59,22 +59,21 @@ DPSchema.pre("save", async function (next) {
     }
   }
 
-  const Counter = require("./Counter");
-  const counter = await Counter.findByIdAndUpdate(
-    { _id: "DP" },
-    { $inc: { seq: 1 } },
-    { new: true }
-  );
+  // const Counter = require("./Counter");
+  // const counter = await Counter.findByIdAndUpdate(
+  //   { _id: "DP" },
+  //   { $inc: { seq: 1 } },
+  //   { new: true }
+  // );
 
-  if (counter) {
-    this.dp_number = counter.seq;
-  }else{
-    await Counter.create({
-      _id:"DP",
-      seq: 0
-    })
-  }
-
+  // if (counter) {
+  //   this.dp_number = counter.seq;
+  // }else{
+  //   await Counter.create({
+  //     _id:"DP",
+  //     seq: 0
+  //   })
+  // }
   next();
 });
 
