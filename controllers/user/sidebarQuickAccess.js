@@ -21,7 +21,7 @@ module.exports = {
       });
   },
   getFilter: async function (req, res) {
-    let result = await QuickAccessModel.find();
+    let result = await QuickAccessModel.find(req.body);
     res.status(200).json({ message: null, data: result });
   },
   deleteById: function (req, res) {
