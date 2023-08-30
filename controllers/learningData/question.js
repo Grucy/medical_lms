@@ -113,21 +113,122 @@ module.exports = {
       });
   },
   getFilterRandom: function (req, res) {
-    const { matiere_id, item_id, n_questions } = req.body;
-    const filter = {
-      matiere_id: new mongoose.Types.ObjectId(matiere_id),
-      item_id: new mongoose.Types.ObjectId(item_id),
-    };
-    if (!matiere_id) delete filter.matiere_id;
-    if (!item_id) delete filter.item_id;
+    const { matiere_id, item_id, n_questions, user_id, rang, tags, history } =
+      req.body;
+    const USER_ID = new mongoose.Types.ObjectId(user_id);
+    const FILTER_BY = {};
+    if (matiere_id)
+      FILTER_BY.matiere_id = new mongoose.Types.ObjectId(matiere_id);
+    if (item_id) FILTER_BY.item_id = new mongoose.Types.ObjectId(item_id);
+    if (rang && rang !== "All") FILTER_BY.difficulty = rang === "A";
+    if (tags && tags.length > 0)
+      FILTER_BY.tags = {
+        $in: tags.map((tag) => new mongoose.Types.ObjectId(tag)),
+      };
+    if (history && history !== "Both") FILTER_BY.tried = history === "Tried";
     const pipeline = [
-      { $match: filter },
+      {
+        $lookup: {
+          from: "score_questions",
+          let: { questionId: "$_id" },
+          pipeline: [
+            {
+              $match: {
+                $expr: {
+                  $and: [
+                    { $eq: ["$user_id", USER_ID] },
+                    { $eq: ["$question_id", "$$questionId"] },
+                  ],
+                },
+              },
+            },
+          ],
+          as: "score_question",
+        },
+      },
+      {
+        $addFields: {
+          tried: {
+            $cond: {
+              if: { $gt: [{ $size: "$score_question" }, 0] },
+              then: true,
+              else: false,
+            },
+          },
+        },
+      },
+      {
+        $project: {
+          score_question: 0,
+        },
+      },
+      { $match: FILTER_BY },
       { $sample: { size: parseInt(n_questions) } },
       { $limit: parseInt(n_questions) },
     ];
     Question.aggregate(pipeline)
       .then((result) => {
         res.status(200).json({ message: null, data: result });
+      })
+      .catch((error) => {
+        console.error(error);
+      });
+  },
+  count: function (req, res) {
+    const { matiere_id, item_id, user_id, rang, tags, history } =
+      req.body;
+    const USER_ID = new mongoose.Types.ObjectId(user_id);
+    const FILTER_BY = {};
+    if (matiere_id)
+      FILTER_BY.matiere_id = new mongoose.Types.ObjectId(matiere_id);
+    if (item_id) FILTER_BY.item_id = new mongoose.Types.ObjectId(item_id);
+    if (rang && rang !== "All") FILTER_BY.difficulty = rang === "A";
+    if (tags && tags.length > 0)
+      FILTER_BY.tags = {
+        $in: tags.map((tag) => new mongoose.Types.ObjectId(tag)),
+      };
+    if (history && history !== "Both") FILTER_BY.tried = history === "Tried";
+    const pipeline = [
+      {
+        $lookup: {
+          from: "score_questions",
+          let: { questionId: "$_id" },
+          pipeline: [
+            {
+              $match: {
+                $expr: {
+                  $and: [
+                    { $eq: ["$user_id", USER_ID] },
+                    { $eq: ["$question_id", "$$questionId"] },
+                  ],
+                },
+              },
+            },
+          ],
+          as: "score_question",
+        },
+      },
+      {
+        $addFields: {
+          tried: {
+            $cond: {
+              if: { $gt: [{ $size: "$score_question" }, 0] },
+              then: true,
+              else: false,
+            },
+          },
+        },
+      },
+      {
+        $project: {
+          score_question: 0,
+        },
+      },
+      { $match: FILTER_BY },
+    ];
+    Question.aggregate(pipeline)
+      .then((result) => {
+        res.status(200).json({ message: null, data: result.length });
       })
       .catch((error) => {
         console.error(error);
