@@ -18,6 +18,7 @@ const progressRouter = require("./routes/progress");
 const cardRouter = require("./routes/card");
 const playlistRouter = require("./routes/playlist");
 const quickAccessRouter = require("./routes/quickaccess");
+const statusRouter = require("./routes/status");
 
 app.use(express.json({ limit: 10000000 }));
 app.use(express.urlencoded({ extended: true }));
@@ -31,16 +32,15 @@ app.use("/api/auth", authRouter);
 
 app.use("/api/matiere", verifyToken, matiereRouter);
 app.use("/api/item", verifyToken, itemRouter);
+app.use("/api/status", verifyToken, statusRouter);
 app.use("/api/session", verifyToken, sessionRouter);
 app.use("/api/tag", verifyToken, tagRouter);
 app.use("/api/question", verifyToken, questionRouter);
 app.use("/api/dp", verifyToken, dpRouter);
-app.use("/api/card", cardRouter);
-app.use("/api/playlist", playlistRouter);
-app.use("/api/quickaccess", quickAccessRouter);
-
+app.use("/api/card",  verifyToken,cardRouter);
+app.use("/api/playlist", verifyToken, playlistRouter);
+app.use("/api/quickaccess", verifyToken, quickAccessRouter);
 app.use("/api/answer", verifyToken, answerRouter);
-
 app.use("/api/progress", verifyToken, progressRouter);
 
 const port = process.env.port || 5000;

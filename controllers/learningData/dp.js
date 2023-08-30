@@ -91,7 +91,7 @@ module.exports = {
     });
   },
   getById: function (req, res) {
-    DPModel.findById(req.params.id)
+    DPModel.findById(req.params.id).populate("questions")
       .then(function (dp) {
         res.status(200).json({ message: null, data: dp });
       })

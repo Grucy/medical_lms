@@ -1,4 +1,5 @@
 const ItemModel = require("../../models/learningData/Item");
+const mongoose = require("mongoose");
 
 module.exports = {
   count: async function (req, res) {
@@ -82,16 +83,119 @@ module.exports = {
       });
   },
   getPage: async function (req, res) {
-    const {pageSize, pageNumber, searchText, filter, sort} = req.body
-    const filterWithSearch={...filter, name:{$regex:searchText, $options:'i'}}
-    const total_number = await ItemModel.countDocuments(filterWithSearch)
-    ItemModel.find(filterWithSearch).sort(sort).skip((pageNumber-1)*pageSize).limit(pageSize)
-    .then(function (items) {
-      res.status(200).json({message: "Item found successfully", total_number: total_number, data: items});
-    })
-    .catch(function (err) {
-      console.log(err);
-      res.status(400).json({message: "Item not found", data: null});
-    });
+    const { user_id, pageSize, pageNumber, searchText, filter, sort } =
+      req.body;
+    const USER_ID = new mongoose.Types.ObjectId(user_id);
+    const PAGE_SIZE = parseInt(pageSize);
+    const PAGE_NUMBER = parseInt(pageNumber);
+    const FILTER_BY = {
+      ...filter,
+      name: { $regex: searchText, $options: "i" },
+      matiere_id: new mongoose.Types.ObjectId(filter.matiere_id),
+    };
+    if (!filter.matiere_id) delete FILTER_BY.matiere_id;
+    const SORT_BY = { item_number: 1, ...sort };
+
+    ItemModel.aggregate([
+      {
+        $lookup: {
+          from: "item_statuses",
+          let: { itemId: "$_id" },
+          pipeline: [
+            {
+              $match: {
+                $expr: {
+                  $and: [
+                    { $eq: ["$user_id", USER_ID] },
+                    { $eq: ["$item_id", "$$itemId"] },
+                  ],
+                },
+              },
+            },
+          ],
+          as: "item_status",
+        },
+      },
+      {
+        $lookup: {
+          from: "progress_items",
+          let: { itemId: "$_id" },
+          pipeline: [
+            {
+              $match: {
+                $expr: {
+                  $and: [
+                    { $eq: ["$user_id", USER_ID] },
+                    { $eq: ["$item_id", "$$itemId"] },
+                  ],
+                },
+              },
+            },
+          ],
+          as: "item_progress",
+        },
+      },
+      {
+        $unwind: {
+          path: "$item_status",
+          preserveNullAndEmptyArrays: true,
+        },
+      },
+      {
+        $unwind: {
+          path: "$item_progress",
+          preserveNullAndEmptyArrays: true,
+        },
+      },
+      {
+        $addFields: {
+          status: "$item_status.status",
+          status_id: "$item_status._id",
+          progress: "$item_progress.progress_rate",
+        },
+      },
+      {
+        $project: {
+          item_status: 0,
+          item_progress: 0,
+        },
+      },
+      {
+        $facet: {
+          data: [
+            {
+              $match: FILTER_BY,
+            },
+            {
+              $sort: SORT_BY,
+            },
+            {
+              $skip: (PAGE_NUMBER - 1) * PAGE_SIZE,
+            },
+            {
+              $limit: PAGE_SIZE,
+            },
+          ],
+          count: [
+            {
+              $match: FILTER_BY,
+            },
+            {
+              $count: "total",
+            },
+          ],
+        },
+      },
+    ])
+      .then((result) => {
+        res.status(200).json({
+          message: null,
+          data: result[0].data,
+          total_number: result[0].count[0].total,
+        });
+      })
+      .catch((err) => {
+        console.log(err);
+      });
   },
 };

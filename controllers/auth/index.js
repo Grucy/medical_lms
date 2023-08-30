@@ -53,7 +53,7 @@ module.exports = {
             error: { password: "Invalid Password!" },
           });
         }
-        console.log("user just logged in:", req.body);
+        // console.log("user just logged in:", req.body);
         const token = jwt.sign({ id: user.id }, process.env.secretKey, {
           algorithm: "HS256",
           allowInsecureKeySizes: true,

@@ -61,6 +61,10 @@ module.exports = {
   },
   getById: function (req, res) {
     Question.findById(req.params.id)
+      // .populate("matiere_id")
+      // .populate("item_id")
+      // .populate("cards")
+      // .populate("tags")
       .then(function (question) {
         res.status(200).json({ message: null, data: question });
       })
@@ -111,8 +115,8 @@ module.exports = {
   getFilterRandom: function (req, res) {
     const { matiere_id, item_id, n_questions } = req.body;
     const filter = {
-      matiere_id:new mongoose.Types.ObjectId(matiere_id),
-      item_id:new mongoose.Types.ObjectId(item_id),
+      matiere_id: new mongoose.Types.ObjectId(matiere_id),
+      item_id: new mongoose.Types.ObjectId(item_id),
     };
     if (!matiere_id) delete filter.matiere_id;
     if (!item_id) delete filter.item_id;
