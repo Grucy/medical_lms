@@ -32,6 +32,14 @@ const compareAndSetScore = function (question, user_answer) {
         } else {
           score = 0;
         }
+        if (question.answers.length > 9)
+          score = Math.round(
+            (questions.answers.filter(
+              ({ answer }, i) => answer && user_answer[i]
+            ).length *
+              total_score) /
+              questions.answers.filter(({ answer }) => answer).length
+          );
         break;
       case "TrueOrFalse":
         score = user_answer === question.answer ? 20 : 0;
