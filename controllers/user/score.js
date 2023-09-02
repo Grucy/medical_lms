@@ -34,11 +34,11 @@ const compareAndSetScore = function (question, user_answer) {
         }
         if (question.answers.length > 9)
           score = Math.round(
-            (questions.answers.filter(
+            (question.answers.filter(
               ({ answer }, i) => answer && user_answer[i]
             ).length *
               total_score) /
-              questions.answers.filter(({ answer }) => answer).length
+              question.answers.filter(({ answer }) => answer).length
           );
         break;
       case "TrueOrFalse":
@@ -171,7 +171,6 @@ const Controller = {
     });
     // If the last assessment exists, update the scores
     if (lastAssess) {
-      console.log("the last assessment exists");
       lastAssess.user_score = score;
 
       // Save the updated assessment
