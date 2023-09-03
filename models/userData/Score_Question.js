@@ -27,8 +27,9 @@ const ScoreQuestionSchema = new Schema(
       ref: "Question",
       required: true,
     },
-    last_score: {
+    user_score: {
       type: Number,
+      required: true,
     },
     total_score: {
       type: Number,

@@ -85,6 +85,7 @@ module.exports = {
   getPage: async function (req, res) {
     const { user_id, pageSize, pageNumber, searchText, filter, sort } =
       req.body;
+    console.log(filter);
     const USER_ID = new mongoose.Types.ObjectId(user_id);
     const PAGE_SIZE = parseInt(pageSize);
     const PAGE_NUMBER = parseInt(pageNumber);
@@ -94,7 +95,7 @@ module.exports = {
       matiere_id: new mongoose.Types.ObjectId(filter.matiere_id),
     };
     if (!filter.matiere_id) delete FILTER_BY.matiere_id;
-    const SORT_BY = { item_number: 1, ...sort };
+    const SORT_BY = { ...sort, item_number: 1 };
 
     ItemModel.aggregate([
       {
@@ -191,7 +192,7 @@ module.exports = {
         res.status(200).json({
           message: null,
           data: result[0].data,
-          total_number: result[0].count[0].total,
+          total_number: result[0].count[0]?.total ?? 0,
         });
       })
       .catch((err) => {
