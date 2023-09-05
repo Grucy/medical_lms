@@ -92,7 +92,7 @@ module.exports = {
     if (!item_id) delete FILTER_BY.item_id;
     if (!playlist_id) delete FILTER_BY.playlist_id;
 
-    const SORT_BY = sort ?? { question_number: 1 };
+    const SORT_BY = { ...sort };
 
     PlaylistQuestionModel.aggregate([
       {
