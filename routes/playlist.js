@@ -12,7 +12,7 @@ router.get("/question/all", Controller.getAllWithQuestions);
 router.post("/question", Controller.addQuestion);
 router.post("/filterQuestion", Controller.getFilterWithQuestion);
 router.post("/filterAndGetPlaylist", Controller.getFilterGetPlaylist);
-router.post("/getQuestionsWithDetail", Controller.getQuestionsWithDetail);
+router.post("/getPage", Controller.getPage);
 router.delete('/question/:id', Controller.deleteQuestionFromPlaylist);
 
 module.exports = router;

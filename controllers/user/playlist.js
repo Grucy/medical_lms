@@ -67,39 +67,137 @@ module.exports = {
     );
     res.status(200).json({ message: null, data: playlists });
   },
-  getQuestionsWithDetail: async function (req, res) {
-    const { pageSize, pageNumber,searchText, user_id, matiere_id, playlist_id, item_id, sort } =
-      req.body;
-    const filter = { 
-      user_id: new mongoose.Types.ObjectId(user_id),
+  getPage: function (req, res) {
+    const {
+      pageSize,
+      pageNumber,
+      user_id,
+      matiere_id,
+      item_id,
+      playlist_id,
+      filter,
+      sort,
+    } = req.body;
+    const USER_ID = new mongoose.Types.ObjectId(user_id);
+    const PAGE_SIZE = parseInt(pageSize);
+    const PAGE_NUMBER = parseInt(pageNumber);
+    const FILTER_BY = {
+      ...filter,
+      user_id: USER_ID,
       matiere_id: new mongoose.Types.ObjectId(matiere_id),
-      item_id: new mongoose.Types.ObjectId(item_id),playlist_id: new mongoose.Types.ObjectId(playlist_id)
+      item_id: new mongoose.Types.ObjectId(item_id),
+      playlist_id: new mongoose.Types.ObjectId(playlist_id),
     };
-    if (!user_id) delete filter.user_id;
-    if (!matiere_id) delete filter.matiere_id;
-    if (!item_id) delete filter.item_id;
-    if (!playlist_id) delete filter.playlist_id;
-    const pipeline = [
-      { $match: filter }, // filter criteria
-      { $group: { _id: "$question_id" } },
-    ];
-    const allQuestions = await PlaylistQuestionModel.aggregate(pipeline);
-    const getPagePipeline = [
-      { $match: filter }, // filter criteria
-      { $group: { _id: "$question_id" } }, // group by question_id
-      // { $sort: sort }, // sort like by createdAt in descending order
-      { $skip: (parseInt(pageNumber) - 1) * parseInt(pageSize) }, // skip documents based on page number and page size
-      { $limit: parseInt(pageSize) }, // limit the number of documents to retrieve per page
-    ];
-    PlaylistQuestionModel.aggregate(getPagePipeline)
-      .then(function (questions) {
-        res
-          .status(200)
-          .json({
-            message: null,
-            total_number: allQuestions.length,
-            data: questions,
-          });
+    if (!matiere_id) delete FILTER_BY.matiere_id;
+    if (!item_id) delete FILTER_BY.item_id;
+    if (!playlist_id) delete FILTER_BY.playlist_id;
+
+    const SORT_BY = sort ?? { question_number: 1 };
+
+    PlaylistQuestionModel.aggregate([
+      {
+        $match: FILTER_BY,
+      },
+      {
+        $group: { _id: "$question_id", playlists: { $push: "$playlist_id" } },
+      },
+      {
+        $lookup: {
+          from: "questions",
+          localField: "_id",
+          foreignField: "_id",
+          as: "question",
+        },
+      },
+      {
+        $lookup: {
+          from: "playlists",
+          localField: "playlists",
+          foreignField: "_id",
+          as: "playlist",
+        },
+      },
+      {
+        $lookup: {
+          from: "score_questions",
+          let: { questionId: "$_id" },
+          pipeline: [
+            {
+              $match: {
+                $expr: {
+                  $and: [
+                    { $eq: ["$user_id", USER_ID] },
+                    { $eq: ["$question_id", "$$questionId"] },
+                  ],
+                },
+              },
+            },
+          ],
+          as: "score",
+        },
+      },
+      {
+        $unwind: {
+          path: "$question",
+          preserveNullAndEmptyArrays: true,
+        },
+      },
+      {
+        $unwind: {
+          path: "$score",
+          preserveNullAndEmptyArrays: true,
+        },
+      },
+      {
+        $project: {
+          _id: 0,
+          playlists: 0,
+        },
+      },
+      {
+        $addFields: {
+          question_id: "$question._id",
+          question_number: "$question.question_number",
+          question: "$question.question",
+          playlists: "$playlist",
+          user_score: "$score.user_score",
+          total_score: "$score.total_score",
+          last_assess: "$score.last_assess",
+        },
+      },
+      {
+        $project: {
+          score: 0,
+          playlist: 0,
+        },
+      },
+      {
+        $facet: {
+          data: [
+            {
+              $sort: SORT_BY,
+            },
+            {
+              $skip: (PAGE_NUMBER - 1) * PAGE_SIZE,
+            },
+            {
+              $limit: PAGE_SIZE,
+            },
+          ],
+          count: [
+            {
+              $count: "total",
+            },
+          ],
+        },
+      },
+    ])
+      .then(function (result) {
+        res.status(200).json({
+          message: null,
+          data: result[0].data,
+          total_number: result[0].count[0]?.total ?? 0,
+        });
       })
       .catch(function (err) {
         console.log(err);
