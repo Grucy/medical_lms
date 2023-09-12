@@ -4,8 +4,8 @@ const Schema = mongoose.Schema;
 const DPSchema = new Schema(
   {
    dp_number:{
-    type: Number,
-    default: 1,
+    type: String,
+    required: true,
    },
     desc: {
       type: String,

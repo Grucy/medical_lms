@@ -4,8 +4,8 @@ const Schema = mongoose.Schema;
 const QuestionSchema = new Schema(
   {
     question_number: {
-      type: Number,
-      default: 1,
+      type: String,
+      required: true,
     },
     desc: String,
     question: {
@@ -33,10 +33,23 @@ const QuestionSchema = new Schema(
     tags: [{ type: Schema.Types.ObjectId, ref: "Tag" }],
     comment: {
       type: String,
-      required: true,
+      // required: true,
     },
     cards: [{ type: Schema.Types.ObjectId, ref: "Card" }],
     difficulty: { type: Boolean, required: true, default: true }, // true means the rank A, false means the rank B
+    // when QI is added to the annales
+    session_id: {
+      type: Schema.Types.ObjectId,
+      ref: "Session",
+    },
+    matieres: [{
+      type: Schema.Types.ObjectId,
+      ref: "Matiere",
+    }],
+    items: [{
+      type: Schema.Types.ObjectId,
+      ref: "Item",
+    }],
   },
   {
     indexes: [{ matiere_id: 1, item_id: 1, dp_id: 1 }],
