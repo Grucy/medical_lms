@@ -20,6 +20,7 @@ const playlistRouter = require("./routes/playlist");
 const quickAccessRouter = require("./routes/quickaccess");
 const statusRouter = require("./routes/status");
 const reportRouter = require("./routes/report");
+const scheduleRouter = require("./routes/schedule");
 
 app.use(express.json({ limit: 10000000 }));
 app.use(express.urlencoded({ extended: true }));
@@ -44,6 +45,7 @@ app.use("/api/playlist", verifyToken, playlistRouter);
 app.use("/api/quickaccess", verifyToken, quickAccessRouter);
 app.use("/api/answer", verifyToken, answerRouter);
 app.use("/api/progress", verifyToken, progressRouter);
+app.use("/api/schedule", verifyToken, scheduleRouter);
 
 const port = process.env.port || 5000;
 app.listen(port, () => console.log(`server is running on port: ${port}`));

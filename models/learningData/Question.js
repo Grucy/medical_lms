@@ -42,14 +42,18 @@ const QuestionSchema = new Schema(
       type: Schema.Types.ObjectId,
       ref: "Session",
     },
-    matieres: [{
-      type: Schema.Types.ObjectId,
-      ref: "Matiere",
-    }],
-    items: [{
-      type: Schema.Types.ObjectId,
-      ref: "Item",
-    }],
+    matieres: [
+      {
+        type: Schema.Types.ObjectId,
+        ref: "Matiere",
+      },
+    ],
+    items: [
+      {
+        type: Schema.Types.ObjectId,
+        ref: "Item",
+      },
+    ],
   },
   {
     indexes: [{ matiere_id: 1, item_id: 1, dp_id: 1 }],
@@ -89,6 +93,14 @@ QuestionSchema.pre("save", async function (next) {
     await ItemModel.findByIdAndUpdate(this.item_id, {
       $inc: { n_questions: 1 },
     });
+  }
+  if (this.session_id) {
+    const SessionModel = require("./Session");
+    const session = await SessionModel.findById(this.session_id);
+    if (session) {
+      session.n_questions += 1;
+      await session.save();
+    }
   }
   // if (this.matiere_id && !this.question_number) {
   //   const counter = await Counter.findByIdAndUpdate(
@@ -134,7 +146,16 @@ QuestionSchema.pre("findOneAndRemove", async function (next) {
     const dp = await DPModel.findById(this.dp_id);
     if (dp) {
       dp.n_questions -= 1;
+      dp.questions = dp.questions.filter((_id) => _id !== doc._id);
       await dp.save();
+    }
+  }
+  if (this.session_id) {
+    const SessionModel = require("./Session");
+    const session = await SessionModel.findById(this.session_id);
+    if (session) {
+      session.n_questions -= 1;
+      await session.save();
     }
   }
   next();

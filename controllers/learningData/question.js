@@ -63,8 +63,8 @@ module.exports = {
     Question.findById(req.params.id)
       // .populate("matiere_id")
       // .populate("item_id")
-      // .populate("cards")
-      // .populate("tags")
+      .populate("cards")
+      .populate("tags")
       .then(function (question) {
         res.status(200).json({ message: null, data: question });
       })
@@ -264,6 +264,154 @@ module.exports = {
       })
       .catch((error) => {
         console.error(error);
+      });
+  },
+  getPage: async function (req, res) {
+    const {
+      user_id,
+      pageSize,
+      pageNumber,
+      searchText,
+      session_id,
+      filter,
+      sort,
+    } = req.body;
+    const PAGE_SIZE = parseInt(pageSize);
+    const PAGE_NUMBER = parseInt(pageNumber);
+    const USER_ID = new mongoose.Types.ObjectId(user_id);
+    const SORT_BY = { ...sort };
+    const FILTER_BY = {
+      question: { $regex: searchText, $options: "i" },
+    };
+    if (session_id)
+      FILTER_BY.session_id = new mongoose.Types.ObjectId(session_id);
+    if (filter.matieres && filter.matieres.length > 0)
+      FILTER_BY.matieres = {
+        $in: filter.matieres.map((_id) => new mongoose.Types.ObjectId(_id)),
+      };
+    if (filter.items && filter.items.length > 0)
+      FILTER_BY.items = {
+        $in: filter.items.map((_id) => new mongoose.Types.ObjectId(_id)),
+      };
+    if (filter.tags && filter.tags.length > 0)
+      FILTER_BY.tags = {
+        $in: filter.tags.map((_id) => new mongoose.Types.ObjectId(_id)),
+      };
+    Question.aggregate([
+      {
+        $lookup: {
+          from: "sessions",
+          localField: "session_id",
+          foreignField: "_id",
+          as: "session",
+        },
+      },
+      {
+        $unwind: {
+          path: "$session",
+          preserveNullAndEmptyArrays: false,
+        },
+      },
+      {
+        $lookup: {
+          from: "score_questions",
+          let: { questionId: "$_id" },
+          pipeline: [
+            {
+              $match: {
+                $expr: {
+                  $and: [
+                    { $eq: ["$user_id", USER_ID] },
+                    { $eq: ["$question_id", "$$questionId"] },
+                  ],
+                },
+              },
+            },
+          ],
+          as: "score",
+        },
+      },
+      {
+        $unwind: {
+          path: "$score",
+          preserveNullAndEmptyArrays: true,
+        },
+      },
+      {
+        $addFields: {
+          last_assess: "$score.last_assess",
+          user_score: "$score.user_score",
+          total_score: "$score.total_score",
+        },
+      },
+      {
+        $project: {
+          score: 0,
+        },
+      },
+      {
+        $facet: {
+          data: [
+            {
+              $match: FILTER_BY,
+            },
+            {
+              $lookup: {
+                from: "matieres",
+                localField: "matieres",
+                foreignField: "_id",
+                as: "matieres",
+              },
+            },
+            {
+              $sort: SORT_BY,
+            },
+            {
+              $lookup: {
+                from: "items",
+                localField: "items",
+                foreignField: "_id",
+                as: "items",
+              },
+            },
+            {
+              $project: {
+                matieres: {
+                  image: 0,
+                },
+                items: {
+                  objects: 0,
+                },
+              },
+            },
+            {
+              $skip: (PAGE_NUMBER - 1) * PAGE_SIZE,
+            },
+            {
+              $limit: PAGE_SIZE,
+            },
+          ],
+          count: [
+            {
+              $match: FILTER_BY,
+            },
+            {
+              $count: "total",
+            },
+          ],
+        },
+      },
+    ])
+      .then(function (result) {
+        res.status(200).json({
+          message: "QIs found successfully",
+          data: result[0].data,
+          total_number: result[0].count[0]?.total ?? 0,
+        });
+      })
+      .catch(function (err) {
+        console.log(err);
+        res.status(400).json({ message: "QIs not found", data: null });
       });
   },
 };
