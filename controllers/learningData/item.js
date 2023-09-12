@@ -85,7 +85,6 @@ module.exports = {
   getPage: async function (req, res) {
     const { user_id, pageSize, pageNumber, searchText, filter, sort } =
       req.body;
-    console.log(filter);
     const USER_ID = new mongoose.Types.ObjectId(user_id);
     const PAGE_SIZE = parseInt(pageSize);
     const PAGE_NUMBER = parseInt(pageNumber);

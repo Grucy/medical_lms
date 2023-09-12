@@ -165,6 +165,39 @@ module.exports = {
       { $match: FILTER_BY },
       { $sample: { size: parseInt(n_questions) } },
       { $limit: parseInt(n_questions) },
+      {
+        $lookup: {
+          from: "score_questions",
+          let: { questionId: "$_id" },
+          pipeline: [
+            {
+              $match: {
+                $expr: {
+                  $and: [
+                    { $eq: ["$user_id", USER_ID] },
+                    { $eq: ["$question_id", "$$questionId"] },
+                  ],
+                },
+              },
+            },
+          ],
+          as: "score",
+        },
+      },
+      {
+        $unwind: {
+          path: "$score",
+          preserveNullAndEmptyArrays: true,
+        },
+      },
+      {
+        $lookup: {
+          from: "tags",
+          localField: "tags",
+          foreignField: "_id",
+          as: "tags",
+        },
+      },
     ];
     Question.aggregate(pipeline)
       .then((result) => {
@@ -175,8 +208,7 @@ module.exports = {
       });
   },
   count: function (req, res) {
-    const { matiere_id, item_id, user_id, rang, tags, history } =
-      req.body;
+    const { matiere_id, item_id, user_id, rang, tags, history } = req.body;
     const USER_ID = new mongoose.Types.ObjectId(user_id);
     const FILTER_BY = {};
     if (matiere_id)

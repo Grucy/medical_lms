@@ -111,11 +111,42 @@ const Controller = {
       question.total_score = total_score;
       dp_user_score += score;
       question.score = score;
+      const lastAssess = await Score_Question.findOne({
+        user_id,
+        question_id: question._id,
+      });
+
+      const lastScore=lastAssess?.user_score;
+      const lastAttempt = lastAssess?.last_assess;
+  
+      // If the last assessment exists, update the scores
+      if (lastAssess) {
+        lastAssess.user_score = score;
+        // Save the updated assessment
+        await lastAssess.save()
+      } else {
+        // Create a new assessment
+        const newAssess = {
+          user_id,
+          matiere_id: question.matiere_id,
+          item_id: question.item_id,
+          dp_id: question.dp_id,
+          question_id: question._id,
+          user_score: score,
+          total_score,
+        };
+  
+        // Save the new assessment
+        await Score_Question.create(newAssess)
+      }
+
       tempDp.questions[i] = {
         ...JSON.parse(JSON.stringify(question)),
         total_score: total_score,
         user_score: score,
         userAnswer: user_answers[i],
+        lastScore,
+        lastAttempt,
       };
     }
     tempDp.dp_total_score = dp_total_score;
@@ -158,7 +189,7 @@ const Controller = {
     const user_id = req.body.user_id;
     const { question_id } = req.body.question;
     const user_answer = req.body.answer;
-    let question = await Question.findById(question_id).populate("cards");
+    let question = await Question.findById(question_id).populate("cards").populate("tags");
     // .populate("Matiere")
     // .populate("Item")
     // .populate("DP")
@@ -169,20 +200,23 @@ const Controller = {
       user_id,
       question_id: question._id,
     });
+    const lastScore=lastAssess?.user_score;
+    const lastAttempt = lastAssess?.last_assess;
+
     // If the last assessment exists, update the scores
     if (lastAssess) {
       lastAssess.user_score = score;
-
       // Save the updated assessment
       await lastAssess
         .save()
         .then(function (result) {
           res.status(200).json({
             message: "Your answer was submitted successfully!",
-            data: { score, question },
+            data: { lastScore, lastAttempt, total_score, score, question },
           });
         })
         .catch(function (err) {
+          console.log(err)
           if (err.errors) {
             res
               .status(400)
@@ -190,7 +224,7 @@ const Controller = {
           } else {
             res
               .status(500)
-              .json({ message: "Internal server error", data: null });
+              .json({ message: "Internal server error1", data: null });
           }
         });
     } else {
@@ -210,7 +244,7 @@ const Controller = {
         .then(function (result) {
           res.status(200).json({
             message: "Your answer was submitted successfully!",
-            data: { score, question },
+            data: { lastScore, lastAttempt, total_score, score, question },
           });
         })
         .catch(function (err) {
@@ -221,7 +255,7 @@ const Controller = {
           } else {
             res
               .status(500)
-              .json({ message: "Internal server error", data: null });
+              .json({ message: "Internal server error2", data: null });
           }
         });
     }

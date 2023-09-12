@@ -2,6 +2,7 @@ const mongoose = require("mongoose");
 const Schema = mongoose.Schema;
 const ProcessMatiereModel = require("./Progress_Matiere");
 const ProcessItemModel = require("./Progress_Item");
+const { Question: QuestionModel } = require("../learningData/Question");
 
 const ScoreQuestionSchema = new Schema(
   {
@@ -47,6 +48,20 @@ const ScoreQuestionSchema = new Schema(
 );
 
 ScoreQuestionSchema.pre("save", async function (next) {
+  const success_increament = this.user_score === 20 ? 1 : 0;
+  await QuestionModel.findByIdAndUpdate(
+    this.question_id,
+    {
+      $inc: {
+        "statistics.total": 1,
+        "statistics.success": success_increament,
+      },
+    },
+    {
+      new: true,
+      upsert: true,
+    }
+  );
   if (this.matiere_id) {
     const matiereProgress = await ProcessMatiereModel.findOne({
       user_id: this.user_id,

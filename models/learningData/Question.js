@@ -12,6 +12,10 @@ const QuestionSchema = new Schema(
       type: String,
       required: true,
     },
+    statistics: {
+      total: { type: Number, default: 0 },
+      success: { type: Number, default: 0 },
+    },
     matiere_id: {
       type: Schema.Types.ObjectId,
       ref: "Matiere",
@@ -69,7 +73,9 @@ QuestionSchema.pre("save", async function (next) {
   }
   if (this.item_id) {
     const ItemModel = require("./Item");
-    await ItemModel.findByIdAndUpdate(this.item_id,{$inc: {n_questions: 1}});
+    await ItemModel.findByIdAndUpdate(this.item_id, {
+      $inc: { n_questions: 1 },
+    });
   }
   // if (this.matiere_id && !this.question_number) {
   //   const counter = await Counter.findByIdAndUpdate(
