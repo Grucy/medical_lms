@@ -6,24 +6,7 @@ const CardSchema = new Schema({
     type: String,
     required: true,
   },
-  def: {
-    type: String,
-    required: true,
-  },
-  title: {
-    type: String,
-  },
   content: {
-    type: String,
-  },
-  instruction: {
-    type: String,
-  },
-  image: {
-    type: String,
-    required: true,
-  },
-  image_desc:{
     type: String,
   },
   items: [{

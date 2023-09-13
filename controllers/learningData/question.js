@@ -43,11 +43,12 @@ module.exports = {
       });
   },
   getAll: async function (req, res) {
-    let questions = await Question.find()
-      .populate("matiere_id")
-      .populate("item_id")
-      .populate("tags")
-      .populate("cards");
+    let questions = await Question.find({
+      $or: [
+        { matiere_id: { $exists: true } },
+        { session_id: { $exists: true } },
+      ],
+    }).select("-answers");
     res.status(200).json({ message: null, data: questions });
   },
   getFilter: async function (req, res) {
@@ -61,10 +62,6 @@ module.exports = {
   },
   getById: function (req, res) {
     Question.findById(req.params.id)
-      // .populate("matiere_id")
-      // .populate("item_id")
-      .populate("cards")
-      .populate("tags")
       .then(function (question) {
         res.status(200).json({ message: null, data: question });
       })

@@ -40,7 +40,7 @@ module.exports = {
       });
   },
   getAll: async function (req, res) {
-    let items = await ItemModel.find().populate("matiere_id");
+    let items = await ItemModel.find();
     res.status(200).json({ message: null, data: items });
   },
   getFilter: async function (req, res) {
