@@ -42,18 +42,6 @@ module.exports = {
   },
   getAll: async function (req, res) {
     let matieres = await MatiereModel.find();
-    // console.log(matieres.length);
-    // let matieresWithDetails = [];
-    // for (i = 0; i < matieres.length; i++) {
-    //   let items = await ItemModel.find({ matiereId: matieres[i]._id });
-    //   let questions = await QuestionModel.find({ matiereId: matieres[i]._id});
-    //   matieresWithDetails.push({
-    //     _id: matieres[i]._id,
-    //     name: matieres[i].name,
-    //     n_items: items.length,
-    //     n_questions: questions.length,
-    //   });
-    // }
     res.status(200).json({
       message: null,
       data: matieres,

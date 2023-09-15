@@ -29,18 +29,6 @@ const DPSchema = new Schema(
     ],
     tags: [{ type: Schema.Types.ObjectId, ref: "Tag" }],
     questions: [{ type: Schema.Types.ObjectId, ref: "Question" }],
-    // matieres_link: [
-    //   {
-    //     type: Schema.Types.ObjectId,
-    //     ref: "Matiere",
-    //   },
-    // ],
-    // items_link: [
-    //   {
-    //     type: Schema.Types.ObjectId,
-    //     ref: "Item",
-    //   },
-    // ],
   },
   {
     indexes: [{ session_id: 1, matiere_id: 1, item_id: 1, dp_id: 1 }],
@@ -54,26 +42,9 @@ DPSchema.pre("save", async function (next) {
     const session = await SessionModel.findById(this.session_id);
     if (session) {
       session.n_dps += 1;
-      // session.n_questions += this.questions.length;
       await session.save();
     }
   }
-
-  // const Counter = require("./Counter");
-  // const counter = await Counter.findByIdAndUpdate(
-  //   { _id: "DP" },
-  //   { $inc: { seq: 1 } },
-  //   { new: true }
-  // );
-
-  // if (counter) {
-  //   this.dp_number = counter.seq;
-  // }else{
-  //   await Counter.create({
-  //     _id:"DP",
-  //     seq: 0
-  //   })
-  // }
   next();
 });
 
