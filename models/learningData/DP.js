@@ -56,7 +56,6 @@ DPSchema.pre("findByIdAndRemove", async function (next) {
     const session = await SessionModel.findById(this.session_id);
     if (session) {
       session.n_dps -= 1;
-      // session.n_questions -= this.questions.length;
       await session.save();
     }
   }

@@ -167,12 +167,4 @@ module.exports = {
       user,
     });
   },
-  getAll: async function (req, res) {
-    let users = await User.find();
-    res.status(200).json({
-      success: true,
-      message: "Users retrieved successfully!",
-      users: users,
-    });
-  },
 };
