@@ -152,6 +152,7 @@ const Controller = {
     tempDp.dp_total_score = dp_total_score;
     tempDp.dp_user_score = dp_user_score;
 
+    // Find the last assessment for the user and question
     await Score_Dp.findOneAndUpdate(
       {
         user_id,
@@ -189,7 +190,12 @@ const Controller = {
     const { question_id } = req.body.question;
     const user_answer = req.body.answer;
     let question = await Question.findById(question_id).populate("cards").populate("tags");
+    // .populate("Matiere")
+    // .populate("Item")
+    // .populate("DP")
+    // .exec();
     const { total_score, score } = compareAndSetScore(question, user_answer);
+    // Find the last assessment for the user and question
     const lastAssess = await Score_Question.findOne({
       user_id,
       question_id: question._id,
@@ -197,8 +203,10 @@ const Controller = {
     const lastScore=lastAssess?.user_score;
     const lastAttempt = lastAssess?.last_assess;
 
+    // If the last assessment exists, update the scores
     if (lastAssess) {
       lastAssess.user_score = score;
+      // Save the updated assessment
       await lastAssess
         .save()
         .then(function (result) {
@@ -220,6 +228,7 @@ const Controller = {
           }
         });
     } else {
+      // Create a new assessment
       const newAssess = {
         user_id,
         matiere_id: question.matiere_id,
@@ -230,6 +239,7 @@ const Controller = {
         total_score,
       };
 
+      // Save the new assessment
       await Score_Question.create(newAssess)
         .then(function (result) {
           res.status(200).json({

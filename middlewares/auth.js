@@ -18,6 +18,21 @@ const verifyToken = (req, res, next) => {
   });
 };
 
+const isAdmin = (req, res, next) => {
+  user_id = req.body.userId;
+  User.findById({ _id: user_id }).then((user) => {
+    if (user && user.role === "admin") {
+      next();
+    } else {
+      res.status(403).send({ succsss: false, message: "Require Admin Role!" });
+      return;
+    }
+  }).catch((err) => {
+    console.error(err);
+    return res.status(403).send({ success: false, message: "User not found!" });
+  });
+};
+
 module.exports = {
   verifyToken,
   isAdmin,

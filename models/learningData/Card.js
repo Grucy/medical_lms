@@ -6,6 +6,9 @@ const CardSchema = new Schema({
     type: String,
     required: true,
   },
+  content: {
+    type: String,
+  },
   items: [{
     type: mongoose.Schema.Types.ObjectId,
     ref: "Item",

@@ -33,6 +33,15 @@ module.exports = {
         })
         .catch((err) => {
           error = err;
+          // if (err.errors) {
+          //   res
+          //     .status(400)
+          //     .json({ message: "Require data", errors: err.errors });
+          // } else {
+          //   res
+          //     .status(500)
+          //     .json({ message: "Internal server error", data: null });
+          // }
         });
       console.log(error);
       if (error) break;

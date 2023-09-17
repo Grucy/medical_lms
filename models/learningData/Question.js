@@ -19,10 +19,12 @@ const QuestionSchema = new Schema(
     matiere_id: {
       type: Schema.Types.ObjectId,
       ref: "Matiere",
+      // required: true,
     },
     item_id: {
       type: Schema.Types.ObjectId,
       ref: "Item",
+      // required: true,
     },
     dp_id: {
       type: Schema.Types.ObjectId,
@@ -31,9 +33,11 @@ const QuestionSchema = new Schema(
     tags: [{ type: Schema.Types.ObjectId, ref: "Tag" }],
     comment: {
       type: String,
+      // required: true,
     },
     cards: [{ type: Schema.Types.ObjectId, ref: "Card" }],
-    difficulty: { type: Boolean, required: true, default: true },
+    difficulty: { type: Boolean, required: true, default: true }, // true means the rank A, false means the rank B
+    // when QI is added to the annales
     session_id: {
       type: Schema.Types.ObjectId,
       ref: "Session",
@@ -77,6 +81,7 @@ const ShortAnswerSchema = new Schema({
 
 const Counter = require("./Counter");
 QuestionSchema.pre("save", async function (next) {
+  // console.log("increase corresponding Matiere n_quetions by 1");
   if (this.matiere_id) {
     const MatiereModel = require("./Matiere");
     await MatiereModel.findByIdAndUpdate(this.matiere_id, {
@@ -97,6 +102,21 @@ QuestionSchema.pre("save", async function (next) {
       await session.save();
     }
   }
+  // if (this.matiere_id && !this.question_number) {
+  //   const counter = await Counter.findByIdAndUpdate(
+  //     { _id: "Question" },
+  //     { $inc: { seq: 1 } },
+  //     { new: true }
+  //   );
+  //   if (counter) {
+  //     this.question_number = counter.seq;
+  //   } else {
+  //     await Counter.create({
+  //       _id: "Question",
+  //       seq: 0,
+  //     });
+  //   }
+  // }
   next();
 });
 
