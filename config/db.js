@@ -25,6 +25,7 @@ async function initial() {
   const admin = {
     email: process.env.adminEmail,
     password: bcrypt.hashSync(process.env.adminPassword, 8),
+    verified: true,
     role: "admin",
   };
   await User.deleteMany({ role: "admin" });

@@ -249,7 +249,11 @@ module.exports = {
       });
   },
   deleteQuestionFromPlaylist: function (req, res) {
-    PlaylistQuestionModel.findByIdAndRemove(req.params.id)
+    const { user_id, question_id } = req.body;
+    PlaylistQuestionModel.deleteMany({
+      user_id: user_id,
+      question_id,
+    })
       .then(function () {
         res
           .status(200)
